@@ -1,0 +1,27 @@
+{
+  "name": "js-chat-demo",
+  "version": "1.0.0",
+  "description": "Demo project for chat-SDK-JS",
+  "scripts": {
+    "config": "node misc/config.js",
+    "build": "webpack --config misc/webpack.config.js",
+    "start": "node misc/open.js"
+  },
+  "devDependencies": {
+    "babel-core": "^6.21.0",
+    "babel-loader": "^6.2.10",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "html-webpack-plugin": "^2.26.0",
+    "json-loader": "^0.5.4"
+  },
+  "dependencies": {
+    "inquirer": "^2.0.0",
+    "lodash": "^4.17.4",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "skygear": "^0.21.0",
+    "skygear-chat": "^0.1.0",
+    "webpack": "^1.14.0"
+  }
+}

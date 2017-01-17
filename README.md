@@ -34,8 +34,8 @@ To try out this demo:
 1. Clone this repository
 2. In the project directory, run `npm install` to retrieve dependencies.
 3. Run `npm run config` to configure your skygear endpoint & API key.
-4. Run `npm start` to start your chat app server.
-5. Open `localhost:8080` to see the chat app in action!
+4. Run `npm run build` to build the demo app.
+5. Run `npm start` to open the chat app in your browser!
 
 
 [chat-SDK-JS]: https://github.com/SkygearIO/chat-SDK-JS
