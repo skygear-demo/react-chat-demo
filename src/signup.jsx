@@ -1,9 +1,11 @@
+import 'normalize.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import skygear from 'skygear';
 
 import config from './config.json';
-import {Authenticate} from './container/Authenticate';
+import Authenticate from './Authenticate';
 
 skygear.config(config.skygearConfig)
 .then(function() {
