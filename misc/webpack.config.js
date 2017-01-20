@@ -1,5 +1,6 @@
 var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -51,6 +52,9 @@ module.exports = {
       hash:     true,
       chunks:   ['commons', 'app']
     }),
+    new CopyWebpackPlugin([
+      {from: 'img', to: 'img'}
+    ]),
   ],
   externals: {
     'react-native': 'undefined',

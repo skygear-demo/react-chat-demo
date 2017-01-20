@@ -2,8 +2,8 @@ import skygear from 'skygear';
 
 export function getInitialState() {
   return {
-    loading: false,
-    error: null
+    loading: false, // loading state (boolean)
+    error: null     // error message (shown in error modal if non-null)
   };
 }
 
@@ -52,3 +52,8 @@ export function signup(
     });
   }
 }
+
+export function closeModal() {
+  this.setState({error: null});
+}
+
