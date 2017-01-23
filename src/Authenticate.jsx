@@ -1,5 +1,75 @@
 import React from 'react';
-import Modal from '../Modal';
+import skygear from 'skygear';
+
+import Modal from './Modal.jsx';
+
+// EVENTS ===================================================
+
+function getPropTypes() {
+  return {
+    // selects weather this is a login or signup page
+    login: React.PropTypes.bool.isRequired
+  };
+}
+
+function getInitialState() {
+  return {
+    loading: false, // loading state (boolean)
+    error: null     // error message (shown in error modal if non-null)
+  };
+}
+
+function login(
+  username,
+  password
+) {
+  this.setState({loading: true});
+  skygear.loginWithUsername(
+    username,
+    password
+  )
+  .then(_ => {
+    window.location.href = 'app.html';
+  })
+  .catch(result => {
+    this.setState({
+      loading: false,
+      error: result.error.message
+    });
+  });
+}
+
+function signup(
+  username,
+  password,
+  passwordConfirm
+) {
+  this.setState({loading: true});
+  if(password !== passwordConfirm) {
+    this.setState({error: 'Passwords do not match.'});
+    return;
+  } else {
+    skygear.signupWithUsername(
+      username,
+      password
+    )
+    .then(_ => {
+      window.location.href = 'app.html';
+    })
+    .catch(result => {
+      this.setState({
+        loading: false,
+        error: result.error.message
+      });
+    });
+  }
+}
+
+function closeModal() {
+  this.setState({error: null});
+}
+
+// VIEWS =====================================================
 
 function InputField({
   label,    // input label text
@@ -52,7 +122,7 @@ function ErrorModal({
   );
 }
 
-export function render() {
+function render() {
   const {
     login
   } = this.props;
@@ -132,8 +202,19 @@ export function render() {
       {error && (
         <ErrorModal
           message={error}
-          onClose={this.closeModal}/>)
-      }
+          onClose={this.closeModal}/>
+      )}
     </div>
   );
 }
+
+// COMPONENT ==================================================
+
+export default React.createClass({
+  propTypes: getPropTypes(),
+  getInitialState,
+  login,
+  signup,
+  closeModal,
+  render,
+});

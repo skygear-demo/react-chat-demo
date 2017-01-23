@@ -1,9 +1,9 @@
 import React from 'react';
 
 export default function({
-  header,
-  onClose,
-  children,
+  header,   // Modal header text
+  onClose,  // modal close action handler fn
+  children, // DOM elements inside modal
 }) {
   return (
     <div

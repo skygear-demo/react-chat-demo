@@ -4,9 +4,9 @@ var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    login:  './src/login.jsx',
-    signup: './src/signup.jsx',
-    app:    './src/app.jsx',
+    login:  './src/index.login.jsx',
+    signup: './src/index.signup.jsx',
+    app:    './src/index.app.jsx',
   },
   output: {
     path:     'demo',

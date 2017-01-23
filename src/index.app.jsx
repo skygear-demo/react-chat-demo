@@ -5,13 +5,13 @@ import ReactDOM from 'react-dom';
 import skygear from 'skygear';
 
 import config from './config.json';
-import App from './App';
+import App from './App.jsx';
 
 skygear.config(config.skygearConfig)
 .then(function() {
   // redirect to login page if not logged-in
   if(!skygear.currentUser) {
-    locaction.href = 'login.html';
+    window.location.href = 'login.html';
   } else {
     const root = document.createElement('div');
     document.body.appendChild(root);
