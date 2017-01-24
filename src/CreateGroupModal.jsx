@@ -11,6 +11,26 @@ function getInitialState() {
   };
 }
 
+function createGroup(
+  members,
+  groupName
+) {
+  this.setState({loading: true});
+  return skygearChat.createConversation(
+    members,
+    groupName
+  ).then((conversation) => {
+    const {conversationList} = this.state;
+    conversationList.unshift(conversation);
+    this.setState({
+      loading: false,
+      modal: null,
+      currentConversation: conversation,
+      conversationList,
+    });
+  });
+}
+
 // VIEWS ==========================================
 
 export function render() {

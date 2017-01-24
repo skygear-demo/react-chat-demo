@@ -27,11 +27,16 @@ function login(
   skygear.loginWithUsername(
     username,
     password
-  )
-  .then(_ => {
+  ).then(user => {
+    return skygear.publicDB.save(
+      new skygear.UserRecord({
+        _id: `user/${user.id}`,
+        displayName: username,
+      })
+    );
+  }).then(_ => {
     window.location.href = 'app.html';
-  })
-  .catch(result => {
+  }).catch(result => {
     this.setState({
       loading: false,
       error: result.error.message
@@ -52,11 +57,16 @@ function signup(
     skygear.signupWithUsername(
       username,
       password
-    )
-    .then(_ => {
+    ).then(user => {
+      return skygear.publicDB.save(
+        new skygear.UserRecord({
+          _id: `user/${user.id}`,
+          displayName: username,
+        })
+      );
+    }).then(_ => {
       window.location.href = 'app.html';
-    })
-    .catch(result => {
+    }).catch(result => {
       this.setState({
         loading: false,
         error: result.error.message

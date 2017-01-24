@@ -161,6 +161,8 @@ function render() {
               borderRadius: '100%',
               backgroundImage: `url(${avatarURL})`,
               backgroundSize: 'contain',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
               cursor: 'pointer',
               width: '5rem',
               height: '5rem',
@@ -174,6 +176,17 @@ function render() {
             edit
           </span>
         </label>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginTop: '1rem',
+          }}>
+          <strong>Username:</strong>
+          <span style={{marginLeft: '0.5rem'}}>
+            {skygear.currentUser && skygear.currentUser.username}
+          </span>
+        </div>
         {DisplayName}
       </div>
       <div

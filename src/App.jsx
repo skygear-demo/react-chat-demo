@@ -14,12 +14,13 @@ import DetailsModal from './DetailsModal.jsx';
 function getInitialState() {
   return {
     loading:              false,              // app loading state (boolean)
-    displayName:          '<loading...>',     // user's display name
+    displayName:          'loading...',       // user's display name
     avatarURL:            'img/loading.svg',  // user's avatar image URL
     unreadCount:          '',                 // user's total unread message count (int or empty string)
     currentModal:         null,               // currently displayed modal dialog name (null for none)
     currentConversation:  null,               // currently selected Conversion Record (null for none)
     conversationList:     [],                 // array of user's Conversion Records
+    userConversations:    {},                 // map of conversation ID -> UserConversation objects
   };
 }
 
@@ -30,8 +31,8 @@ function fetchUserProfile() {
   ).then(([user]) => {
     console.log('user: ', user);
     this.setState({
-      displayName:  user.displayName || skygear.currentUser.username,
-      avatarURL:    (user.avatar)? user.avatar.url : 'img/avatar.svg' ,
+      displayName:  user.displayName,
+      avatarURL:    (user.avatar)? user.avatar.url : 'img/avatar.svg',
     });
   });
 }
@@ -45,10 +46,37 @@ function fetchUnreadCount() {
 }
 
 function fetchConversations() {
-  skygearChat.getConversations()
-  .then((conversationList) => {
-    console.log('conversation list: ', conversationList);
-    this.setState({conversationList});
+  skygearChat.getUserConversations()
+    .then(userConversationList => {
+      console.log('userConversation list: ', userConversationList);
+      // convert list of UserConversations records to map by ID
+      const userConversations = {};
+      for(let i = 0; i < userConversationList.length; i++) {
+        const conversationID = userConversationList[i].conversation.id;
+        userConversations[conversationID] = userConversationList[i];
+      }
+      const conversationList = userConversationList.map(c => c.$transient.conversation);
+      this.setState({
+        conversationList,
+        userConversations,
+      });
+    });
+}
+
+function addNewConversation(
+  conversation
+) {
+  const {
+    conversationList,
+    userConversations,
+  } = this.state;
+  conversationList.unshift(conversation);
+  userConversations[conversation.id] = conversation;
+  this.setState({
+    modal: null,
+    currentConversation: conversation,
+    conversationList,
+    userConversations,
   });
 }
 
@@ -62,21 +90,27 @@ function leaveConversation(
   conversation
 ) {
   this.setState({loading: true});
-  skygearChat.leaveConversation(
+  return skygearChat.leaveConversation(
     conversation
   ).then(_ => {
-    const {conversationList} = this.state;
-    // remove conversation from list
+    const {
+      conversationList,
+      userConversations,
+    } = this.state;
+    // remove Conversation from list
     for(let i = 0; i < conversationList.length; i++) {
       if(conversation.id === conversationList[i].id) {
         conversationList.splice(i,1);
         break;
       }
     }
+    // remove UserConversation from map
+    delete userConversations[conversation.id];
     this.setState({
       loading: false,
       currentConversation: null,
       conversationList,
+      userConversations,
     });
   });
 }
@@ -85,7 +119,7 @@ function addUserToConversation(
   user
 ) {
   this.setState({loading: true});
-  skygearChat.addParticipants(
+  return skygearChat.addParticipants(
     this.state.currentConversation,
     [user]
   ).then(conversation => {
@@ -109,7 +143,7 @@ function changeConversationName(
   newConversationName
 ) {
   this.setState({loading: true});
-  skygearChat.updateConversation(
+  return skygearChat.updateConversation(
     this.state.currentConversation,
     newConversationName
   ).then(conversation => {
@@ -143,48 +177,6 @@ function showDetails() {
 }
 function closeModal() {
   this.setState({currentModal: null});
-}
-
-function createGroup(
-  members,
-  groupName
-) {
-  this.setState({loading: true});
-  skygearChat.createConversation(
-    members,
-    groupName
-  ).then((conversation) => {
-    const {conversationList} = this.state;
-    conversationList.unshift(conversation);
-    this.setState({
-      loading: false,
-      currentConversation: conversation,
-      conversationList,
-    });
-  });
-}
-
-function createChat(
-  user
-) {
-  this.setState({loading: true});
-  skygear.publicDB.query(
-    new skygear.Query(skygear.UserRecord)
-    .equalTo('_id', user.id)
-  ).then(([userProfile]) => {
-    return skygearChat.createDirectConversation(
-      user,
-      userProfile.displayName || user.username
-    );
-  }).then((conversation) => {
-    const {conversationList} = this.state;
-    conversationList.unshift(conversation);
-    this.setState({
-      loading: false,
-      currentConversation: conversation,
-      conversationList,
-    });
-  });
 }
 
 function changeAvatar(
@@ -267,6 +259,7 @@ function render() {
     currentModal,
     currentConversation,
     conversationList,
+    userConversations,
   } = this.state;
 
   return (
@@ -275,6 +268,7 @@ function render() {
         position: 'fixed',
         width: '100%',
         height: '100%',
+        display: 'flex',
       }}>
       <div
         style={{
@@ -286,14 +280,14 @@ function render() {
         <div
           style={{
             width: '100%,',
-            height: '4rem',
+            height: '2rem',
             padding: '1rem 2rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             borderBottom: '1px solid #888',
           }}>
-          <span>{unreadCount}</span>
+          <span>{unreadCount || ''}</span>
           <h1>Chats</h1>
           <img
             src="img/gear.svg"
@@ -321,7 +315,10 @@ function render() {
         {
           conversationList.map((c) => (
             <ConversationPreview
+              key={c.id}
+              selected={c.id === (currentConversation && currentConversation.id)}
               conversation={c}
+              userConversation={userConversations[c.id] || null}
               onClick={_ => this.switchConversation(c)}/>
           ))
         }
@@ -336,13 +333,13 @@ function render() {
           createGroup: (
             <CreateGroupModal
               loading={loading}
-              createGroup={this.createGroup}
+              addNewConversation={this.addNewConversation}
               onClose={this.closeModal}/>
           ),
           createChat: (
             <CreateChatModal
               loading={loading}
-              createChat={this.createChat}
+              addNewConversation={this.addNewConversation}
               onClose={this.closeModal}/>
           ),
           settings: (
@@ -388,8 +385,7 @@ export default React.createClass({
   showSettings,
   showDetails,
   closeModal,
-  createGroup,
-  createChat,
+  addNewConversation,
   changeAvatar,
   changeName,
   logout,
