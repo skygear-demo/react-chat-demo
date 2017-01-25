@@ -14,34 +14,34 @@ function getPropTypes() {
 }
 
 function getInitialState() {
-  const {
-    title,
-    distinct_by_participants,
-  } = this.props.conversation;
-  const chatTitle = (distinct_by_participants)? 'loading...' : title;
+  const {title} = this.props.conversation;
   return {
-    title:    chatTitle,  // conversation title (either group name or name of first non-self participant)
-    messages: [],         // list of Message records (newest last)
+    title:    title || 'loading...',  // conversation title (either group name or name of first non-self participant)
+    messages: [],                     // list of Message records (newest last)
+    users:    {},                     // user Records by ID
   };
 }
 
-// use first user's name as the conversation title if not defined
-// add elipsies if there are more than 2 participants
-function fetchFirstUser() {
-  const firstUserID =
-    this.props.conversation
-    .participant_ids
-    .filter(id => id !== skygear.currentUser.id)[0];
+// use participant names as the conversation title if not defined
+// add elipsies if the title is longer than 30 chars
+function fetchUsers() {
   skygear.publicDB.query(
     new skygear.Query(skygear.UserRecord)
-    .equalTo('_id', firstUserID)
-  ).then(([firstUser]) => {
-    const {
-      title,
-      participant_count,
-    } = this.props.conversation;
+    .contains('_id', this.props.conversation.participant_ids)
+  ).then(userList => {
+    const {title} = this.props.conversation;
+    let names = userList
+      .filter(u => u._id !== skygear.currentUser.id)
+      .map(u => u.displayName)
+      .join(', ');
+    if (names.length > 30) {
+      names = names.substring(0,27) + '...';
+    }
+    const users = {};
+    userList.forEach(u => users[u._id] = u);
     this.setState({
-      title: title || firstUser.displayName + (participant_count > 2 ? ', ...' : ''),
+      users,
+      title: title || names,
     });
   });
 }
@@ -51,7 +51,8 @@ function fetchMessages() {
     this.props.conversation
   ).then(messages => {
     // FIXME: rollback workaround when #21 is merged
-    this.setState({messages: messages.results});
+    skygearChat.markAsRead(messages.results);
+    this.setState({messages: messages.results.reverse()});
   });
 }
 function subscribeTypingEvent() {
@@ -68,7 +69,8 @@ function sendMessage(
 ) {
   skygearChat.createMessage(
     this.props.conversation,
-    messageBody
+    messageBody,
+    {userID: skygear.currentUser.id}
   ).then(message => {
     const {messages} = this.state;
     messages.push(message);
@@ -83,11 +85,45 @@ function sendTypingEvent() {
 // VIEWS ===============================================
 
 function Message({
-  message // {Message} message record to display
+  message,  // {Message} message record to display
+  user      // {User} the user that the message belongs to
 }) {
-  return (
-    <p>foo</p>
-  );
+  if(message && user) {
+    return (
+      <div
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: (user._id === skygear.currentUser.id) ? 'flex-end' : 'flex-start',
+        }}>
+        <div
+          style={{
+            border: '1px solid #000',
+            borderRadius: '100%',
+            backgroundImage: `url(${user.avatar ? user.avatar.url : 'img/avatar.svg'})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            width: '2rem',
+            height: '2rem',
+            marginLeft: '1rem',
+          }}>
+        </div>
+        <div
+          style={{
+            margin: '1rem',
+            padding: '0.5rem',
+            border: '1px solid #000',
+            borderRadius: '10px',
+          }}>
+          {message.body}
+        </div>
+      </div>
+    );
+  } else {
+    return null;
+  }
 }
 
 function render() {
@@ -100,6 +136,7 @@ function render() {
   const {
     title,
     messages,
+    users,
   } = this.state;
 
   return (
@@ -134,19 +171,26 @@ function render() {
           onClick={showDetails}
           src="img/info.svg"/>
       </div>
-      <div>
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          overflowX: 'hidden',
+          overflowY: 'scroll',
+        }}>
         {
           messages.map((m) => (
             <Message
               key={m.id}
-              message={m}/>
+              message={m}
+              user={users[m.metadata.userID]}/>
           ))
         }
       </div>
       <div
         style={{
           width: '100%',
-          height: '4rem',
+          height: '5rem',
           display: 'flex',
           alignItem: 'center',
           borderTop: '1px solid #000',
@@ -193,9 +237,7 @@ export default React.createClass({
   propTypes: getPropTypes(),
   getInitialState,
   componentDidMount: function() {
-    if(this.props.conversation.distinct_by_participants) {
-      fetchFirstUser.call(this);
-    }
+    fetchUsers.call(this);
     fetchMessages.call(this);
     subscribeTypingEvent.call(this);
     subscribeMessageEvent.call(this);

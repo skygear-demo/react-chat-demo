@@ -18,14 +18,10 @@ function getPropTypes() {
 }
 
 function getInitialState() {
-  const {
-    title,
-    distinct_by_participants,
-  } = this.props.conversation;
-  const chatTitle = (distinct_by_participants)? 'loading...' : title;
+  const {title} = this.props.conversation;
   return {
-    title:    chatTitle,          // conversation title (either group name or name of first non-self participant)
-    imageURL: 'img/loading.svg',  // conversation image URL
+    title:    title || 'loading...',  // conversation title (either group name or name of first non-self participant)
+    imageURL: 'img/loading.svg',      // conversation image URL
   };
 }
 
@@ -110,7 +106,7 @@ function render() {
           </span>
         )}
       </div>
-      <span>{unread_count || ''}</span>
+      <span>{unread_count > 0 ? `(${unread_count})` : ''}</span>
     </div>
   );
 }

@@ -40,8 +40,8 @@ function fetchUnreadCount() {
   skygearChat.getUnreadCount()
   .then((unreadCount) => {
     console.log('unread count: ', unreadCount);
-    // FIXME: use real unread count when API is fixed
-    this.setState({unreadCount: 0});
+    // FIXME: roll back workaround when API is fixed
+    this.setState({unreadCount: unreadCount.message});
   });
 }
 
@@ -49,13 +49,21 @@ function fetchConversations() {
   skygearChat.getUserConversations()
     .then(userConversationList => {
       console.log('userConversation list: ', userConversationList);
+      // automatically remove conversations with only 1 participant
+      userConversationList
+        .filter(uc => uc.$transient.conversation.participant_count === 1)
+        .forEach(uc => skygearChat.leaveConversation(uc.$transient.conversation));
+      const cleanUserConversationList =
+        userConversationList
+        .filter(uc => uc.$transient.conversation.participant_count > 1);
       // convert list of UserConversations records to map by ID
       const userConversations = {};
-      for(let i = 0; i < userConversationList.length; i++) {
-        const conversationID = userConversationList[i].conversation.id;
-        userConversations[conversationID] = userConversationList[i];
-      }
-      const conversationList = userConversationList.map(c => c.$transient.conversation);
+      cleanUserConversationList.forEach(uc => {
+        userConversations[uc.conversation.id] = uc;
+      });
+      const conversationList =
+        cleanUserConversationList
+        .map(c => c.$transient.conversation);
       this.setState({
         conversationList,
         userConversations,
@@ -73,7 +81,7 @@ function addNewConversation(
   conversationList.unshift(conversation);
   userConversations[conversation.id] = conversation;
   this.setState({
-    modal: null,
+    currentModal: null,
     currentConversation: conversation,
     conversationList,
     userConversations,
@@ -86,10 +94,9 @@ function switchConversation(
   this.setState({currentConversation: conversation});
 }
 
-function leaveConversation(
-  conversation
-) {
+function leaveConversation() {
   this.setState({loading: true});
+  const conversation = this.state.currentConversation;
   return skygearChat.leaveConversation(
     conversation
   ).then(_ => {
@@ -108,6 +115,7 @@ function leaveConversation(
     delete userConversations[conversation.id];
     this.setState({
       loading: false,
+      currentModal: null,
       currentConversation: null,
       conversationList,
       userConversations,
@@ -287,7 +295,7 @@ function render() {
             justifyContent: 'space-between',
             borderBottom: '1px solid #888',
           }}>
-          <span>{unreadCount || ''}</span>
+          <span>{unreadCount > 0 ? `(${unreadCount})` : ''}</span>
           <h1>Chats</h1>
           <img
             src="img/gear.svg"
@@ -315,7 +323,7 @@ function render() {
         {
           conversationList.map((c) => (
             <ConversationPreview
-              key={c.id}
+              key={c.id + c.updatedAt}
               selected={c.id === (currentConversation && currentConversation.id)}
               conversation={c}
               userConversation={userConversations[c.id] || null}
@@ -325,44 +333,51 @@ function render() {
       </div>
       {currentConversation && (
         <Conversation
+          key={currentConversation.id + currentConversation.updatedAt}
           conversation={currentConversation}
           showDetails={this.showDetails}/>
       )}
-      {
-        {
-          createGroup: (
-            <CreateGroupModal
-              loading={loading}
-              addNewConversation={this.addNewConversation}
-              onClose={this.closeModal}/>
-          ),
-          createChat: (
-            <CreateChatModal
-              loading={loading}
-              addNewConversation={this.addNewConversation}
-              onClose={this.closeModal}/>
-          ),
-          settings: (
-            <SettingsModal
-              loading={loading}
-              displayName={displayName}
-              avatarURL={avatarURL}
-              changeName={this.changeName}
-              changeAvatar={this.changeAvatar}
-              onClose={this.closeModal}
-              logout={this.logout}/>
-          ),
-          details: (
-            <DetailsModal
-              loading={loading}
-              conversation={currentConversation}
-              addUserToConversation={this.addUserToConversation}
-              changeConversationName={this.changeConversationName}
-              leaveConversation={this.leaveConversation}
-              onClose={this.closeModal}/>
-          ),
-        }[currentModal] || null
-      }
+      {(currentModal => {
+        switch(currentModal) {
+          case 'createGroup':
+            return (
+              <CreateGroupModal
+                loading={loading}
+                addNewConversation={this.addNewConversation}
+                onClose={this.closeModal}/>
+            );
+          case 'createChat':
+            return (
+              <CreateChatModal
+                loading={loading}
+                addNewConversation={this.addNewConversation}
+                onClose={this.closeModal}/>
+            );
+          case 'settings':
+            return (
+              <SettingsModal
+                loading={loading}
+                displayName={displayName}
+                avatarURL={avatarURL}
+                changeName={this.changeName}
+                changeAvatar={this.changeAvatar}
+                onClose={this.closeModal}
+                logout={this.logout}/>
+            );
+          case 'details':
+            return (
+              <DetailsModal
+                loading={loading}
+                conversation={currentConversation}
+                addUserToConversation={this.addUserToConversation}
+                changeConversationName={this.changeConversationName}
+                leaveConversation={this.leaveConversation}
+                onClose={this.closeModal}/>
+            );
+          default:
+            return null;
+        }
+      })(currentModal)}
     </div>
   );
 }

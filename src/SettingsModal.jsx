@@ -59,10 +59,7 @@ function changeName() {
 
 // stop editing name & discard changes
 function stopEditName() {
-  this.setState({
-    editingName: false,
-    displayName: this.props.displayName,
-  });
+  this.setState({editingName: false});
 }
 
 // VIEWS ==========================================
@@ -81,56 +78,6 @@ function render() {
     newDisplayName,
     editingName,
   } = this.state;
-
-  const DisplayName = (editingName)? (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: '1rem',
-      }}>
-      <input
-        type="text"
-        value={newDisplayName}
-        onChange={e => this.updateName(e.target.value)}/>
-      <span
-        style={{
-          cursor: 'pointer',
-          fontSize: '1.3rem',
-        }}
-        onClick={this.stopEditName}>
-        ✕
-      </span>
-      <span
-        style={{
-          cursor: 'pointer',
-          fontSize: '1.5rem',
-        }}
-        onClick={this.changeName}>
-        ✓
-      </span>
-    </div>
-  ) : (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        marginTop: '1rem',
-      }}>
-      <strong>Name:</strong>
-      <span style={{marginLeft: '0.5rem'}}>
-        {displayName}
-      </span>
-      <img
-        src="img/edit.svg"
-        style={{
-          marginLeft: '1rem',
-          height: '1rem',
-          cursor: 'pointer',
-        }}
-        onClick={this.editName}/>
-    </div>
-  );
 
   return (
     <Modal
@@ -187,7 +134,55 @@ function render() {
             {skygear.currentUser && skygear.currentUser.username}
           </span>
         </div>
-        {DisplayName}
+        {(editingName)? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '1rem',
+            }}>
+            <input
+              type="text"
+              value={newDisplayName}
+              onChange={e => this.updateName(e.target.value)}/>
+            <span
+              style={{
+                cursor: 'pointer',
+                fontSize: '1.3rem',
+              }}
+              onClick={this.stopEditName}>
+              ✕
+            </span>
+            <span
+              style={{
+                cursor: 'pointer',
+                fontSize: '1.5rem',
+              }}
+              onClick={this.changeName}>
+              ✓
+            </span>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '1rem',
+            }}>
+            <strong>Name:</strong>
+            <span style={{marginLeft: '0.5rem'}}>
+              {displayName}
+            </span>
+            <img
+              src="img/edit.svg"
+              style={{
+                marginLeft: '1rem',
+                height: '1rem',
+                cursor: 'pointer',
+              }}
+              onClick={this.editName}/>
+          </div>
+        )}
       </div>
       <div
         style={{
