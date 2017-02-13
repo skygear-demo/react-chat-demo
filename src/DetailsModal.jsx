@@ -70,9 +70,16 @@ function stopEditName() {
   this.setState({editingName: false});
 }
 
+// discover and add user
+function discoverAndAddUser(
+  username
+) {
+  console.log(username);
+}
+
 // VIEWS ==========================================
 
-export function render() {
+function render() {
   if(!this.props.conversation) {
     return null;
   }
@@ -183,6 +190,38 @@ export function render() {
             </div>
           ))
         }
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            this.discoverAndAddUser(
+              e.target[1].value
+            );
+          }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            margin: '0.5rem 0',
+          }}>
+          <input
+            type='submit'
+            value='+'
+            style={{
+              border: '1px solid #000',
+              borderRadius: '100%',
+              padding: '0.35rem 0.65rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem',
+              backgroundColor: '#FFF',
+              cursor: 'pointer',
+            }} />
+          <input
+            type='text'
+            style={{
+              marginLeft: '1rem'
+            }} />
+        </form>
         <div
           style={{
             alignSelf: 'center',
@@ -215,6 +254,7 @@ export default React.createClass({
   stopEditName,
   updateName,
   changeName,
+  discoverAndAddUser,
   render,
 });
 

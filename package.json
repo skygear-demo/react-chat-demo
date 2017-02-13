@@ -4,9 +4,9 @@
   "description": "Demo project for chat-SDK-JS",
   "scripts": {
     "config": "node misc/config.js",
-    "start": "node misc/open.js",
-    "build": "webpack --config misc/webpack.config.js --progress",
-    "watch": "webpack --config misc/webpack.config.js --progress --watch",
+    "start": "webpack-dev-server --content-base demo --hot --inline --debug --devtool source-map --output-pathinfo",
+    "build": "webpack --progress",
+    "watch": "webpack --progress --watch",
     "deploy": "misc/deploy.sh"
   },
   "devDependencies": {
@@ -19,7 +19,8 @@
     "html-webpack-plugin": "^2.26.0",
     "json-loader": "^0.5.4",
     "style-loader": "^0.13.1",
-    "webpack": "^1.14.0"
+    "webpack": "^2.2.1",
+    "webpack-dev-server": "^2.3.0"
   },
   "dependencies": {
     "inquirer": "^2.0.0",
@@ -27,6 +28,6 @@
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "skygear": "^0.19.2",
-    "skygear-chat": "^0.2.0"
+    "skygear-chat": "file:../chat-SDK-JS"
   }
 }

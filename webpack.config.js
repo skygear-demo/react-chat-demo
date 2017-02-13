@@ -9,23 +9,23 @@ module.exports = {
     app:    './src/index.app.jsx',
   },
   output: {
-    path:     'demo',
+    path:     '/demo',
     filename: '[name].js'
   },
   module: {
     loaders: [
       {
         test: /\.jsx$/,
-        loader: 'babel',
+        loader: 'babel-loader',
         query: {presets: ['es2015', 'react']}
       },
       {
         test: /\.json$/,
-        loader: 'json'
+        loader: 'json-loader'
       },
       {
         test: /\.css$/,
-        loader: 'style!css'
+        loader: 'style-loader!css-loader'
       }
     ]
   },
@@ -61,6 +61,6 @@ module.exports = {
     'websocket': 'undefined'
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['*', '.js', '.jsx']
   }
 }

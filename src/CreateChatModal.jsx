@@ -49,9 +49,13 @@ function discoverUserAndCreateChat(
       });
     }
   }).then(conversation => {
-    if(conversation) {
-      this.props.addNewConversation(conversation);
-    }
+    return skygearChat.getUserConversation(
+      conversation
+    );
+  }).then(userConversation => {
+    this.props.addNewConversation(
+      userConversation
+    );
   }).catch(err => {
     this.setState({
       loading: false,
@@ -86,7 +90,7 @@ function render() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          width: '18rem',
+          width: '21rem',
           padding: '3rem 3rem 1rem',
         }}>
         <label>Username</label>

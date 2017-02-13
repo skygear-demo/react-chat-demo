@@ -29,7 +29,6 @@ function fetchUserProfile() {
     new skygear.Query(skygear.UserRecord)
     .equalTo('_id', skygear.currentUser.id)
   ).then(([user]) => {
-    console.log('user: ', user);
     this.setState({
       displayName:  user.displayName,
       avatarURL:    (user.avatar)? user.avatar.url : 'img/avatar.svg',
@@ -39,7 +38,6 @@ function fetchUserProfile() {
 function fetchUnreadCount() {
   skygearChat.getUnreadCount()
   .then((unreadCount) => {
-    console.log('unread count: ', unreadCount);
     // FIXME: roll back workaround when API is fixed
     this.setState({unreadCount: unreadCount.message});
   });
@@ -72,14 +70,17 @@ function fetchConversations() {
 }
 
 function addNewConversation(
-  conversation
+  userConversation
 ) {
+  const conversation = userConversation.$transient.conversation;
   const {
     conversationList,
     userConversations,
   } = this.state;
+
   conversationList.unshift(conversation);
-  userConversations[conversation.id] = conversation;
+  userConversations[conversation.id] = userConversation;
+
   this.setState({
     currentModal: null,
     currentConversation: conversation,
@@ -97,6 +98,7 @@ function switchConversation(
 function leaveConversation() {
   this.setState({loading: true});
   const conversation = this.state.currentConversation;
+  console.log('[leave conversation]', conversation);
   return skygearChat.leaveConversation(
     conversation
   ).then(_ => {

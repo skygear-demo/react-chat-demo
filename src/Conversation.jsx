@@ -50,18 +50,46 @@ function fetchMessages() {
   skygearChat.getMessages(
     this.props.conversation
   ).then(messages => {
-    // FIXME: rollback workaround when #21 is merged
-    skygearChat.markAsRead(messages.results);
-    this.setState({messages: messages.results.reverse()});
+    skygearChat.markAsRead(messages);
+    this.setState({messages: messages.reverse()});
   });
 }
+
+function typingEventHandler(events) {
+  console.log('[typing events]', events);
+}
 function subscribeTypingEvent() {
+  skygearChat.subscribeTypingIndicator(
+    this.props.conversation,
+    this.typingEventHandler
+  );
 }
 function unsubscribeTypingEvent() {
+  skygearChat.unsubscribeTypingIndicator(
+    this.props.conversation
+  );
+}
+
+function messageEventHandler(event) {
+  const {
+    conversation
+  } = this.props;
+  if (
+    event.record_type === 'message' &&
+    event.record.conversation_id === conversation._id
+  ) {
+    console.log('[message event]', event);
+  }
 }
 function subscribeMessageEvent() {
+  skygearChat.subscribe(
+    this.messageEventHandler
+  );
 }
 function unsubscribeMessageEvent() {
+  skygearChat.unsubscribe(
+    this.messageEventHandler
+  );
 }
 
 function sendMessage(
@@ -78,8 +106,32 @@ function sendMessage(
   });
 }
 
+const _debounceTimeout = 3000;
+let _debounceTimer;
+function _stopTyping() {
+  _debounceTimer = null;
+  skygearChat.sendTypingIndicator(
+    this.props.conversation,
+    'finished'
+  );
+}
 function sendTypingEvent() {
-  // TODO: debounce event and send typing status
+  if(!_debounceTimer) {
+    _debounceTimer = setTimeout(
+      _stopTyping.bind(this),
+      _debounceTimeout
+    );
+    skygearChat.sendTypingIndicator(
+      this.props.conversation,
+      'begin'
+    );
+  } else {
+    clearTimeout(_debounceTimer);
+    _debounceTimer = setTimeout(
+      _stopTyping.bind(this),
+      _debounceTimeout
+    );
+  }
 }
 
 // VIEWS ===============================================
@@ -95,7 +147,7 @@ function Message({
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: (user._id === skygear.currentUser.id) ? 'flex-end' : 'flex-start',
+          justifyContent: (skygear.currentUser && skygear.currentUser.id === user._id) ? 'flex-end' : 'flex-start',
         }}>
         <div
           style={{
@@ -243,10 +295,14 @@ export default React.createClass({
     subscribeMessageEvent.call(this);
   },
   componentWillUnmount: function() {
-    unsubscribeTypingEvent.call(this);
+    // FIXME: do unsubscribe when #32 is fixed
+    //unsubscribeTypingEvent.call(this);
     unsubscribeMessageEvent.call(this);
   },
+  typingEventHandler,
+  messageEventHandler,  
   sendMessage,
   sendTypingEvent,
   render,
 });
+

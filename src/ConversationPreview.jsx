@@ -56,10 +56,13 @@ function render() {
     selected,
     onClick,
   } = this.props;
-  const {
-    unread_count,
-    last_read_message,
-  } = this.props.userConversation;
+  const unreadCount =
+    this.props.userConversation.unread_count;
+  const lastMessageObj =
+    this.props.userConversation
+    .$transient.conversation
+    .$transient.last_message;
+  const lastMessage = lastMessageObj ? lastMessageObj.body : null;
   const {
     title,
     imageURL,
@@ -96,17 +99,17 @@ function render() {
           width: '70%',
         }}>
         <h2 style={{margin: '0'}}>{title}</h2>
-        {last_read_message && (
+        {lastMessage && (
           <span
             style={{
               marginTop: '0.5rem',
               color: '#AAA',
             }}>
-            {last_read_message}
+            {lastMessage}
           </span>
         )}
       </div>
-      <span>{unread_count > 0 ? `(${unread_count})` : ''}</span>
+      <span>{unreadCount > 0 ? `(${unreadCount})` : ''}</span>
     </div>
   );
 }
