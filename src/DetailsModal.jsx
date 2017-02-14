@@ -74,7 +74,8 @@ function stopEditName() {
 function discoverAndAddUser(
   username
 ) {
-  console.log(username);
+  console.log('[add username]', username);
+  // TODO: implement this
 }
 
 // VIEWS ==========================================
@@ -106,11 +107,11 @@ function render() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          width: '18rem',
+          width: '21rem',
           padding: '1rem',
         }}>
         <strong style={{margin: '2rem 0 0.5rem'}}>
-          Name:
+          Conversation Name:
         </strong>
         {(editingName)? (
           <div
@@ -217,7 +218,8 @@ function render() {
           <input
             type='text'
             style={{
-              marginLeft: '1rem'
+              marginLeft: '1rem',
+              width: '100%',
             }} />
         </form>
         <div

@@ -31,9 +31,9 @@ export default function ManagedMessageList(
     conversation instanceof skygear.Record &&
     conversation.recordType === 'conversation'
   )) {
-    throw new Error(`TypingDetector expects Conversation, instead got ${conversation}.`);
+    throw new Error(`ManagedMessageList expects Conversation, instead got ${conversation}.`);
   }
 
-  // TODO: implement
+  // TODO: implement this component
 
 }

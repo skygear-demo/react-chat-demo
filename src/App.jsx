@@ -38,7 +38,7 @@ function fetchUserProfile() {
 function fetchUnreadCount() {
   skygearChat.getUnreadCount()
   .then((unreadCount) => {
-    // FIXME: roll back workaround when API is fixed
+    // FIXME: rollback workaround when getUnreadCount API is fixed
     this.setState({unreadCount: unreadCount.message});
   });
 }
@@ -46,7 +46,7 @@ function fetchUnreadCount() {
 function fetchConversations() {
   skygearChat.getUserConversations()
     .then(userConversationList => {
-      console.log('userConversation list: ', userConversationList);
+      console.log('[userConversation list]', userConversationList);
       // automatically remove conversations with only 1 participant
       userConversationList
         .filter(uc => uc.$transient.conversation.participant_count === 1)
