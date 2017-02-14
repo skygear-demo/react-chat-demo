@@ -10,7 +10,7 @@ function getPropTypes() {
     conversation:     React.PropTypes.instanceOf(skygear.Record).isRequired,
     // target UserConversation
     userConversation: React.PropTypes.instanceOf(skygear.Record).isRequired,
-    // weather this conversation is selected
+    // whether this conversation is selected
     selected:         React.PropTypes.bool.isRequired,
     // component onClick handler
     onClick:          React.PropTypes.func.isRequired,
@@ -53,20 +53,27 @@ function fetchFirstUser() {
 
 function render() {
   const {
-    selected,
-    onClick,
-  } = this.props;
-  const unreadCount =
-    this.props.userConversation.unread_count;
-  const lastMessageObj =
-    this.props.userConversation
-    .$transient.conversation
-    .$transient.last_message;
-  const lastMessage = lastMessageObj ? lastMessageObj.body : null;
-  const {
-    title,
-    imageURL,
-  } = this.state;
+    props: {
+      selected,
+      onClick,
+      userConversation: {
+        unread_count: unreadCount,
+        $transient: {
+          conversation: {
+            $transient: {
+              last_message: {
+                body: lastMessage
+              } = {}
+            }
+          }
+        }
+      }
+    },
+    state: {
+      title,
+      imageURL,
+    },
+  } = this;
 
   return (
     <div

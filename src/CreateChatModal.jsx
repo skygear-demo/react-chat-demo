@@ -68,11 +68,13 @@ function discoverUserAndCreateChat(
 
 function render() {
   const {
-    onClose,
-  } = this.props;
-  const {
-    errorMessage,
-  } = this.state;
+    props: {
+      onClose,
+    },
+    state: {
+      errorMessage,
+    },
+  } = this;
 
   const loading = this.props.loading || this.state.loading;
 

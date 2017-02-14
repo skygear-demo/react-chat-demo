@@ -98,7 +98,6 @@ function switchConversation(
 function leaveConversation() {
   this.setState({loading: true});
   const conversation = this.state.currentConversation;
-  console.log('[leave conversation]', conversation);
   return skygearChat.leaveConversation(
     conversation
   ).then(_ => {

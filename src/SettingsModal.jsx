@@ -67,17 +67,19 @@ function stopEditName() {
 
 function render() {
   const {
-    loading,
-    displayName,
-    avatarURL,
-    changeAvatar,
-    onClose,
-    logout,
-  } = this.props;
-  const {
-    newDisplayName,
-    editingName,
-  } = this.state;
+    props: {
+      loading,
+      displayName,
+      avatarURL,
+      changeAvatar,
+      onClose,
+      logout,
+    },
+    state: {
+      newDisplayName,
+      editingName,
+    }
+  } = this;
 
   return (
     <Modal

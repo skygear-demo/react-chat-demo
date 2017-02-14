@@ -7,7 +7,7 @@ import Modal from './Modal.jsx';
 
 function getPropTypes() {
   return {
-    // selects weather this is a login or signup page
+    // selects whether this is a login or signup page
     login: React.PropTypes.bool.isRequired
   };
 }
@@ -134,12 +134,14 @@ function ErrorModal({
 
 function render() {
   const {
-    login
-  } = this.props;
-  const {
-    loading,
-    error
-  } = this.state;
+    props: {
+      login,
+    },
+    state: {
+      loading,
+      error,
+    },
+  } = this;
 
   return (
     <div

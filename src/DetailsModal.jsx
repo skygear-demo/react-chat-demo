@@ -80,24 +80,23 @@ function discoverAndAddUser(
 // VIEWS ==========================================
 
 function render() {
-  if(!this.props.conversation) {
-    return null;
-  }
   const {
-    loading,
-    addUserToConversation,
-    changeConversationName,
-    leaveConversation,
-    onClose,
-  } = this.props;
-  const {
-    title
-  } = this.props.conversation;
-  const {
-    editingName,
-    newConversationName,
-    users,
-  } = this.state;
+    props: {
+      loading,
+      addUserToConversation,
+      changeConversationName,
+      leaveConversation,
+      onClose,
+      conversation: {
+        title
+      },
+    },
+    state: {
+      editingName,
+      newConversationName,
+      users,
+    },
+  } = this;
 
   return (
     <Modal
@@ -208,10 +207,9 @@ function render() {
             style={{
               border: '1px solid #000',
               borderRadius: '100%',
-              padding: '0.35rem 0.65rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              minWidth: '3rem',
+              width: '3rem',
+              height: '3rem',
               fontSize: '2rem',
               backgroundColor: '#FFF',
               cursor: 'pointer',

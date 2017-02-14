@@ -2,6 +2,8 @@ import React from 'react';
 import skygear from 'skygear';
 import skygearChat from 'skygear-chat';
 
+import TypingDetector from './TypingDetector.jsx';
+
 // EVENTS =================================================
 
 function getPropTypes() {
@@ -14,7 +16,14 @@ function getPropTypes() {
 }
 
 function getInitialState() {
-  const {title} = this.props.conversation;
+  const {
+    conversation,
+    conversation: {title}
+  } = this.props;
+
+  // initialize typing detector for this conversation
+  this.typing = TypingDetector(conversation);
+
   return {
     title:    title || 'loading...',  // conversation title (either group name or name of first non-self participant)
     messages: [],                     // list of Message records (newest last)
@@ -57,6 +66,17 @@ function fetchMessages() {
 
 function typingEventHandler(events) {
   console.log('[typing events]', events);
+  // TODO: set timeout for typing indicator (in case the 'finish' event is not recieved)
+  const {users} = this.state;
+  for(let userID in events) {
+    const _id = userID.split('/')[1];
+    if(events[userID].event === 'begin') {
+      users[_id].typing = true;
+    } else /* finish */ {
+      users[_id].typing = false;
+    }
+  }
+  this.setState({users});
 }
 function subscribeTypingEvent() {
   skygearChat.subscribeTypingIndicator(
@@ -72,13 +92,24 @@ function unsubscribeTypingEvent() {
 
 function messageEventHandler(event) {
   const {
-    conversation
-  } = this.props;
+    props: {
+      conversation
+    },
+    state: {
+      messages
+    }
+  } = this;
+  console.log('[message event]', event);
   if (
     event.record_type === 'message' &&
-    event.record.conversation_id === conversation._id
+    event.record.conversation_id.id === conversation.id
   ) {
-    console.log('[message event]', event);
+    if(event.event_type === 'create') {
+      // TODO: deduplicate messages
+      // TODO: ensure order by creation date
+      messages.push(event.record);
+      this.setState({messages});
+    }
   }
 }
 function subscribeMessageEvent() {
@@ -99,39 +130,12 @@ function sendMessage(
     this.props.conversation,
     messageBody,
     {userID: skygear.currentUser.id}
-  ).then(message => {
-    const {messages} = this.state;
-    messages.push(message);
-    this.setState({messages});
-  });
-}
-
-const _debounceTimeout = 3000;
-let _debounceTimer;
-function _stopTyping() {
-  _debounceTimer = null;
-  skygearChat.sendTypingIndicator(
-    this.props.conversation,
-    'finished'
   );
-}
-function sendTypingEvent() {
-  if(!_debounceTimer) {
-    _debounceTimer = setTimeout(
-      _stopTyping.bind(this),
-      _debounceTimeout
-    );
-    skygearChat.sendTypingIndicator(
-      this.props.conversation,
-      'begin'
-    );
-  } else {
-    clearTimeout(_debounceTimer);
-    _debounceTimer = setTimeout(
-      _stopTyping.bind(this),
-      _debounceTimeout
-    );
-  }
+  //.then(message => {
+  //  const {messages} = this.state;
+  //  messages.push(message);
+  //  this.setState({messages});
+  //});
 }
 
 // VIEWS ===============================================
@@ -180,16 +184,18 @@ function Message({
 
 function render() {
   const {
-    showDetails,
-  } = this.props;
-  const {
-    participant_count,
-  } = this.props.conversation;
-  const {
-    title,
-    messages,
-    users,
-  } = this.state;
+    props: {
+      showDetails,
+      conversation: {
+        participant_count,
+      }
+    },
+    state: {
+      title,
+      messages,
+      users,
+    },
+  } = this;
 
   return (
     <div
@@ -202,84 +208,108 @@ function render() {
       }}>
       <div
         style={{
+          position: 'relative',
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          width: '100%',
+          flexDirection: 'column',
+          justifyContent: 'center',
           height: '6rem',
           borderBottom: '1px solid #000',
         }}>
-        <span></span>
-        <span style={{fontSize: '1.5rem'}}>
-          <strong>{title}</strong>
-          {` (${participant_count} people)`}
-        </span>
-        <img
+        <div
           style={{
-            height: '2rem',
-            cursor: 'pointer',
-            marginRight: '2rem',
-          }}
-          onClick={showDetails}
-          src="img/info.svg"/>
-      </div>
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          overflowX: 'hidden',
-          overflowY: 'scroll',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+          }}>
+          <span></span>
+          <span style={{fontSize: '1.5rem'}}>
+            <strong>{title}</strong>
+            {` (${participant_count} people)`}
+          </span>
+          <img
+            style={{
+              height: '2rem',
+              cursor: 'pointer',
+              marginRight: '2rem',
+            }}
+            onClick={showDetails}
+            src="img/info.svg"/>
+        </div>
+        <span style={{
+          position: 'absolute',
+          bottom: '0.5rem',
+          left: '0.5rem',
         }}>
         {
-          messages.map((m) => (
-            <Message
-              key={m.id}
-              message={m}
-              user={users[m.metadata.userID]}/>
-          ))
+          (_ => {
+            const typingUsers =
+              Object.values(users)
+              .filter(u => u.typing)
+              .map(u => u.displayName)
+              .join(', ');
+            return (typingUsers === '')? '' : `${typingUsers} is typing...`;
+          })()
         }
-      </div>
-      <div
+      </span>
+    </div>
+    <div
+      style={{
+        height: '100%',
+        width: '100%',
+        overflowX: 'hidden',
+        overflowY: 'scroll',
+      }}>
+      {
+        messages.map((m) => (
+          <Message
+            key={m.id}
+            message={m}
+            user={users[m.metadata.userID]}/>
+        ))
+      }
+    </div>
+    <div
+      style={{
+        width: '100%',
+        height: '5rem',
+        display: 'flex',
+        alignItem: 'center',
+        borderTop: '1px solid #000',
+      }}>
+      <form
         style={{
           width: '100%',
-          height: '5rem',
+          margin: '1rem',
           display: 'flex',
           alignItem: 'center',
-          borderTop: '1px solid #000',
+          justifyContent: 'space-between',
+        }}
+        onSubmit={e => {
+          e.preventDefault();
+          this.sendMessage(e.target[0].value);
+          e.target[0].value = '';
         }}>
-        <form
+        <input
           style={{
+            padding: '0.25rem',
+            fontSize: '1rem',
             width: '100%',
-            margin: '1rem',
-            display: 'flex',
-            alignItem: 'center',
-            justifyContent: 'space-between',
           }}
-          onSubmit={e => {
-            e.preventDefault();
-            this.sendMessage(e.target[0].value);
-            e.target[0].value = '';
-          }}>
-          <input
-            style={{
-              padding: '0.25rem',
-              fontSize: '1rem',
-              width: '100%',
-            }}
-            onChange={this.sendTypingEvent}
-            type="text"/>
-          <input
-            style={{
-              backgroundColor: '#FFF',
-              border: '1px solid #000',
-              padding: '0.5rem 1rem',
-              marginLeft: '1rem',
-            }}
-            value="Send"
-            type="submit"/>
-        </form>
-      </div>
+          onChange={this.typing}
+          type="text"/>
+        <input
+          style={{
+            backgroundColor: '#FFF',
+            border: '1px solid #000',
+            padding: '0.5rem 1rem',
+            marginLeft: '1rem',
+          }}
+          value="Send"
+          type="submit"/>
+      </form>
     </div>
+  </div>
   );
 }
 
@@ -302,7 +332,6 @@ export default React.createClass({
   typingEventHandler,
   messageEventHandler,  
   sendMessage,
-  sendTypingEvent,
   render,
 });
 

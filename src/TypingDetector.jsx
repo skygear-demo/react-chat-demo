@@ -1,48 +1,57 @@
 
 import skygearChat from 'skygear-chat';
+import skygear from 'skygear';
 
 
-// http://stackoverflow.com/questions/36871299/how-to-extend-function-with-es6-classes
-class ExtensibleFunction extends Function {
-  constructor(f) {
-    return Object.setPrototypeOf(f, new.target.prototype);
+/**
+ * Detects whether the user is typing in an input field and send typing events to the server.
+ *
+ * @example
+ * var typing = TypingDetector(conversation); // NOTE: new is not used
+ * <input type=text oninput="typing()" />
+ *
+ * @param {Conversation} conversation - send typing events to this conversation.
+ * @param {Object} [options]
+ * @param {number} [options.debounceTime = 3000] - interger of miliseconds to debounce calls
+ */
+export default function TypingDetector (
+  conversation,
+  {
+    debounceTime = 3000
+  } = {}
+) {
+  if(!(
+    conversation instanceof skygear.Record &&
+    conversation.recordType === 'conversation'
+  )) {
+    throw new Error(`TypingDetector expects Conversation, instead got ${conversation}.`);
   }
-}
-
-
-export default class extends ExtensibleFunction {
-  constructor(conversation, debounceTime = 3000) {
-    super(() => {
-      if(this.debounceTimer) {
-        this.startTyping();
-      } else {
-        this.resetTimer();
-      }
-    });
-    this.conversation = conversation;
-    this.debounceTime = debounceTime;
-    this.debounceTimer = null;
-  }
-  startTyping() {
-    this.debounceTimer = setTimeout(
-      this.stopTyping,
-      this.debounceTime
-    );
+  let debounceTimer = null;
+  function stopTyping() {
     skygearChat.sendTypingIndicator(
-      this.conversation, 'begin'
+      conversation, 'finished'
     );
+    debounceTimer = null;
   }
-  resetTimer() {
-    clearTimeout(this.debounceTimer);
-    this.debounceTimer = setTimeout(
-      this.stopTyping,
-      this.debounceTime
-    );
-  }
-  stopTyping() {
-    this.debounceTimer = null;
+  function startTyping() {
     skygearChat.sendTypingIndicator(
-      this.conversation, 'finished'
+      conversation, 'begin'
+    );
+    debounceTimer = setTimeout(
+      stopTyping, debounceTime
     );
   }
+  function resetTimer() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(
+      stopTyping, debounceTime
+    );
+  }
+  return function() {
+    if(debounceTimer) {
+      resetTimer();
+    } else {
+      startTyping();
+    }
+  };
 }
