@@ -27,6 +27,7 @@ function getPropTypes() {
 
 function getInitialState() {
   return {
+    loading:              false,  // modal loading state (boolean)
     editingName:          false,  // conversation name editing state (boolean)
     newConversationName:  '',     // editing conversation name
     users:                [],     // list of users in the current conversation
@@ -74,8 +75,37 @@ function stopEditName() {
 function discoverAndAddUser(
   username
 ) {
-  console.log('[add username]', username);
-  // TODO: implement this
+  this.setState({loading: true});
+  skygear.discoverUserByUsernames(
+    username
+  ).then(results => {
+    if(results.length <= 0) {
+      return Promise.reject({message: `user "${username}" not found`})
+    }
+    const {users} = this.state;
+    const newUser = results[0];
+    if(users.filter(u => u.id === newUser.id).length > 0) {
+      return Promise.reject({message: `user "${username}" already added`})
+    }
+    return skygearChat.addParticipants(
+      this.props.conversation,
+      [newUser]
+    ).then(
+      _ => newUser // pass new user to next handler
+    );
+  }).then(newUser => {
+    const {users} = this.state;
+    users.push(newUser);
+    this.setState({
+      loading: false,
+      users,
+    });
+  }).catch(err => {
+    this.setState({
+      loading: false,
+      errorMessage: `Error: ${err.message}`,
+    });
+  });
 }
 
 // VIEWS ==========================================
@@ -83,7 +113,6 @@ function discoverAndAddUser(
 function render() {
   const {
     props: {
-      loading,
       addUserToConversation,
       changeConversationName,
       leaveConversation,
@@ -98,6 +127,8 @@ function render() {
       users,
     },
   } = this;
+
+  const loading = this.props.loading || this.state.loading;
 
   return (
     <Modal
@@ -217,6 +248,7 @@ function render() {
             }} />
           <input
             type='text'
+            disabled={loading}
             style={{
               marginLeft: '1rem',
               width: '100%',

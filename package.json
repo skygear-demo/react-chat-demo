@@ -7,7 +7,7 @@
     "start": "webpack-dev-server --content-base demo --hot --inline --debug --devtool source-map --output-pathinfo",
     "build": "webpack --progress",
     "watch": "webpack --progress --watch",
-    "deploy": "misc/deploy.sh"
+    "deploy": "bash misc/deploy.sh"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",

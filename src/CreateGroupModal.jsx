@@ -116,7 +116,7 @@ export function render() {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          width: '22rem',
+          width: '25rem',
           padding: '1rem',
         }}>
         <strong style={{margin: '2rem 0 0.5rem'}}>

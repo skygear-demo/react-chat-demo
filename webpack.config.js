@@ -9,7 +9,7 @@ module.exports = {
     app:    './src/index.app.jsx',
   },
   output: {
-    path:     '/demo',
+    path:     './demo',
     filename: '[name].js'
   },
   module: {

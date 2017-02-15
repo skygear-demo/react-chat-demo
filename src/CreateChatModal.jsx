@@ -43,10 +43,7 @@ function discoverUserAndCreateChat(
         null
       );
     } else {
-      this.setState({
-        loading: false,
-        errorMessage: `Error: user "${username}" not found`,
-      });
+      return Promise.reject({message: `user "${username}" not found`})
     }
   }).then(conversation => {
     return skygearChat.getUserConversation(
