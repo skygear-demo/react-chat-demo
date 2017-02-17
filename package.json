@@ -4,7 +4,7 @@
   "description": "Demo project for chat-SDK-JS",
   "scripts": {
     "config": "node misc/config.js",
-    "start": "webpack-dev-server --content-base demo --hot --inline --debug --devtool source-map --output-pathinfo",
+    "start": "node misc/open.js",
     "build": "webpack --progress",
     "watch": "webpack --progress --watch",
     "deploy": "bash misc/deploy.sh"
@@ -19,8 +19,7 @@
     "html-webpack-plugin": "^2.26.0",
     "json-loader": "^0.5.4",
     "style-loader": "^0.13.1",
-    "webpack": "^2.2.1",
-    "webpack-dev-server": "^2.3.0"
+    "webpack": "^2.2.1"
   },
   "dependencies": {
     "inquirer": "^2.0.0",
