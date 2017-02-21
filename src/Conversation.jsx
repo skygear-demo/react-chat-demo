@@ -223,10 +223,26 @@ function render() {
             width: '100%',
           }}>
           <span></span>
-          <span style={{fontSize: '1.5rem'}}>
-            <strong>{title}</strong>
-            {` (${participant_count} people)`}
-          </span>
+          <div
+            style={{
+              textAlign: 'center',
+              fontSize: '1.5rem'
+            }}>
+            <strong>{title}</strong> {` (${participant_count} people)`} <br/>
+            <span style={{fontSize: '1rem'}}>
+              {
+                (_ => {
+                  const typingUsers =
+                    Object.values(users)
+                    .filter(u => u._id !== skygear.currentUser.id)
+                    .filter(u => u.typing)
+                    .map(u => u.displayName)
+                    .join(', ');
+                  return (typingUsers === '')? '' : `${typingUsers} is typing...`;
+                })()
+              }
+            </span>
+          </div>
           <img
             style={{
               height: '2rem',
@@ -236,81 +252,64 @@ function render() {
             onClick={showDetails}
             src="img/info.svg"/>
         </div>
-        <span style={{
-          position: 'absolute',
-          bottom: '0.5rem',
-          left: '0.5rem',
+      </div>
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          overflowX: 'hidden',
+          overflowY: 'scroll',
         }}>
         {
-          (_ => {
-            const typingUsers =
-              Object.values(users)
-              .filter(u => u._id !== skygear.currentUser.id)
-              .filter(u => u.typing)
-              .map(u => u.displayName)
-              .join(', ');
-            return (typingUsers === '')? '' : `${typingUsers} is typing...`;
-          })()
+          messages.map((m) => (
+            <Message
+              key={m.id}
+              message={m}
+              user={users[m.metadata.userID]}/>
+          ))
         }
-      </span>
-    </div>
-    <div
-      style={{
-        height: '100%',
-        width: '100%',
-        overflowX: 'hidden',
-        overflowY: 'scroll',
-      }}>
-      {
-        messages.map((m) => (
-          <Message
-            key={m.id}
-            message={m}
-            user={users[m.metadata.userID]}/>
-        ))
-      }
-    </div>
-    <div
-      style={{
-        width: '100%',
-        height: '5rem',
-        display: 'flex',
-        alignItem: 'center',
-        borderTop: '1px solid #000',
-      }}>
-      <form
+      </div>
+      <div
         style={{
           width: '100%',
-          margin: '1rem',
+          height: '5rem',
           display: 'flex',
           alignItem: 'center',
-          justifyContent: 'space-between',
-        }}
-        onSubmit={e => {
-          e.preventDefault();
-          this.sendMessage(e.target[0].value);
-          e.target[0].value = '';
+          borderTop: '1px solid #000',
         }}>
-        <input
+        <form
           style={{
-            padding: '0.25rem',
-            fontSize: '1rem',
             width: '100%',
+            margin: '1rem',
+            display: 'flex',
+            alignItem: 'center',
+            justifyContent: 'space-between',
           }}
-          onChange={this.typing}
-          type="text"/>
-        <input
-          style={{
-            backgroundColor: '#FFF',
-            border: '1px solid #000',
-            padding: '0.5rem 1rem',
-            marginLeft: '1rem',
-          }}
-          value="Send"
-          type="submit"/>
-      </form>
+          onSubmit={e => {
+            e.preventDefault();
+            this.sendMessage(e.target[0].value);
+            e.target[0].value = '';
+          }}>
+          <input
+            style={{
+              padding: '0.25rem',
+              fontSize: '1rem',
+              width: '100%',
+            }}
+            onChange={this.typing}
+            type="text"/>
+          <input
+            style={{
+              backgroundColor: '#FFF',
+              border: '1px solid #000',
+              padding: '0.5rem 1rem',
+              marginLeft: '1rem',
+            }}
+            value="Send"
+            type="submit"/>
+        </form>
+      </div>
     </div>
-  </div>
   );
 }
 
