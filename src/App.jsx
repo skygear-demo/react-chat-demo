@@ -284,11 +284,12 @@ function render() {
           height: '100%',
           width: '25%',
           minWidth: '400px',
-          borderRight: '1px solid #888'
+          borderRight: '1px solid #888',
+          display: 'flex',
+          flexDirection: 'column',
         }}>
         <div
           style={{
-            width: '100%,',
             height: '2rem',
             padding: '1rem 2rem',
             display: 'flex',
@@ -321,16 +322,18 @@ function render() {
             text="Group"
             onClick={this.showCreateGroup}/>
         </div>
-        {
-          conversationList.map((c) => (
-            <ConversationPreview
-              key={c.id + c.updatedAt}
-              selected={c.id === (currentConversation && currentConversation.id)}
-              conversation={c}
-              userConversation={userConversations[c.id] || null}
-              onClick={_ => this.switchConversation(c)}/>
-          ))
-        }
+        <div style={{overflowY: 'scroll'}}>
+          {
+            conversationList.map((c) => (
+              <ConversationPreview
+                key={c.id + c.updatedAt}
+                selected={c.id === (currentConversation && currentConversation.id)}
+                conversation={c}
+                userConversation={userConversations[c.id] || null}
+                onClick={_ => this.switchConversation(c)}/>
+            ))
+          }
+        </div>
       </div>
       {currentConversation && (
         <Conversation

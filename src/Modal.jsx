@@ -23,6 +23,8 @@ export default function({
           position: 'relative',
           backgroundColor: '#FFF',
           padding: '1rem',
+          maxHeight: '90%',
+          overflowY: 'scroll',
         }}>
         <header>
           <span
