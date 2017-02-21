@@ -129,7 +129,6 @@ function sendMessage(
   skygearChat.createMessage(
     this.props.conversation,
     messageBody,
-    {userID: skygear.currentUser.id}
   );
   //.then(message => {
   //  const {messages} = this.state;
@@ -265,7 +264,7 @@ function render() {
             <Message
               key={m.id}
               message={m}
-              user={users[m.metadata.userID]}/>
+              user={users[m.createdBy]}/>
           ))
         }
       </div>
