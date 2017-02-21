@@ -80,7 +80,6 @@ function render() {
       onClick={onClick}
       style={{
         display: 'flex',
-        justifyContent: 'space-between',
         alignItems: 'center',
         padding: '1rem 2rem',
         borderBottom: '1px solid #DDD',
@@ -101,6 +100,7 @@ function render() {
       </div>
       <div
         style={{
+          padding: '0 1rem',
           display: 'flex',
           flexDirection: 'column',
           width: '70%',
@@ -116,7 +116,9 @@ function render() {
           </span>
         )}
       </div>
-      <span>{unreadCount > 0 ? `(${unreadCount})` : ''}</span>
+      <span>
+        {unreadCount > 0 ? `(${unreadCount})` : ''}
+      </span>
     </div>
   );
 }

@@ -274,7 +274,7 @@ function render() {
           width: '100%',
           height: '5rem',
           display: 'flex',
-          alignItem: 'center',
+          alignItems: 'center',
           borderTop: '1px solid #000',
         }}>
         <form
@@ -282,7 +282,7 @@ function render() {
             width: '100%',
             margin: '1rem',
             display: 'flex',
-            alignItem: 'center',
+            alignItems: 'center',
             justifyContent: 'space-between',
           }}
           onSubmit={e => {
