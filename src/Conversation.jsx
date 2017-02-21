@@ -234,7 +234,8 @@ function render() {
               {
                 (_ => {
                   const typingUsers =
-                    Object.values(users)
+                    Object.keys(users)
+                    .map(k => users[k])
                     .filter(u => u._id !== skygear.currentUser.id)
                     .filter(u => u.typing)
                     .map(u => u.displayName)
