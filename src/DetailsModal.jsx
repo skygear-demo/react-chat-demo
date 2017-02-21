@@ -118,7 +118,8 @@ function render() {
       leaveConversation,
       onClose,
       conversation: {
-        title
+        title,
+        distinct_by_participants: directChat,
       },
     },
     state: {
@@ -221,56 +222,60 @@ function render() {
             </div>
           ))
         }
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            this.discoverAndAddUser(
-              e.target[1].value
-            );
-          }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            margin: '0.5rem 0',
-          }}>
-          <input
-            type='submit'
-            value='+'
-            style={{
-              border: '1px solid #000',
-              borderRadius: '100%',
-              minWidth: '3rem',
-              width: '3rem',
-              height: '3rem',
-              fontSize: '2rem',
-              backgroundColor: '#FFF',
-              cursor: 'pointer',
-            }} />
-          <input
-            type='text'
-            disabled={loading}
-            style={{
-              marginLeft: '1rem',
-              width: '100%',
-            }} />
-        </form>
-        <div
-          style={{
-            alignSelf: 'center',
-            marginTop: '2rem',
-          }}>
-          <button
-            style={{
-              backgroundColor: '#FFF',
-              border: '1px solid #000',
-              padding: '1rem 2rem',
-              cursor: 'pointer',
+        { !directChat && (
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              this.discoverAndAddUser(
+                e.target[1].value
+              );
             }}
-            disabled={loading}
-            onClick={leaveConversation}>
-            Leave Chat
-          </button>
-        </div>
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              margin: '0.5rem 0',
+            }}>
+            <input
+              type='submit'
+              value='+'
+              style={{
+                border: '1px solid #000',
+                borderRadius: '100%',
+                minWidth: '3rem',
+                width: '3rem',
+                height: '3rem',
+                fontSize: '2rem',
+                backgroundColor: '#FFF',
+                cursor: 'pointer',
+              }} />
+            <input
+              type='text'
+              disabled={loading}
+              style={{
+                marginLeft: '1rem',
+                width: '100%',
+              }} />
+          </form>
+        )}
+        { !directChat && (
+          <div
+            style={{
+              alignSelf: 'center',
+              marginTop: '2rem',
+            }}>
+            <button
+              style={{
+                backgroundColor: '#FFF',
+                border: '1px solid #000',
+                padding: '1rem 2rem',
+                cursor: 'pointer',
+              }}
+              disabled={loading}
+              onClick={leaveConversation}>
+              Leave Chat
+            </button>
+          </div>
+        )}
       </div>
     </Modal>
   );
