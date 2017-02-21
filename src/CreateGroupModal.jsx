@@ -71,6 +71,10 @@ function createGroup() {
     this.setState({errorMessage: 'Error: missing group name'});
     return;
   }
+  if(members.length < 2) {
+    this.setState({errorMessage: 'Error: groups must have 3 or more participants'});
+    return;
+  }
   this.setState({loading: true});
   skygearChat.createConversation(
     members,
