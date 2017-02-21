@@ -39,7 +39,7 @@ function login(
   }).catch(result => {
     this.setState({
       loading: false,
-      error: result.error.message
+      error: result.error.message,
     });
   });
 }
@@ -51,7 +51,10 @@ function signup(
 ) {
   this.setState({loading: true});
   if(password !== passwordConfirm) {
-    this.setState({error: 'Passwords do not match.'});
+    this.setState({
+      loading: false,
+      error: 'Passwords do not match.'
+    });
     return;
   } else {
     skygear.signupWithUsername(
