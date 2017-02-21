@@ -126,15 +126,17 @@ function unsubscribeMessageEvent() {
 function sendMessage(
   messageBody // {string} message to send
 ) {
-  skygearChat.createMessage(
-    this.props.conversation,
-    messageBody,
-  );
-  //.then(message => {
-  //  const {messages} = this.state;
-  //  messages.push(message);
-  //  this.setState({messages});
-  //});
+  if(messageBody.length > 0) {
+    skygearChat.createMessage(
+      this.props.conversation,
+      messageBody,
+    );
+    //.then(message => {
+    //  const {messages} = this.state;
+    //  messages.push(message);
+    //  this.setState({messages});
+    //});
+  }
 }
 
 // VIEWS ===============================================
