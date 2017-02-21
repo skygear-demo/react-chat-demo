@@ -37,6 +37,8 @@ To try out this demo:
 4. Run `npm run build` to build the demo app.
 5. Run `npm start` to open the chat app in your browser!
 
+For quick demo, we have deployed [demo](http://reactchatdemo.skygeario.com/static/login.html).
+
 
 [chat-SDK-JS]: https://github.com/SkygearIO/chat-SDK-JS
 [npm]: https://www.npmjs.com/
