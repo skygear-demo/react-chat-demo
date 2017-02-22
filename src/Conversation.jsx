@@ -59,6 +59,7 @@ function fetchMessages() {
   skygearChat.getMessages(
     this.props.conversation
   ).then(messages => {
+    console.log('[messages]', messages);
     skygearChat.markAsRead(messages);
     this.setState({messages: messages.reverse()});
   });
@@ -145,6 +146,8 @@ function Message({
   message,  // {Message} message record to display
   user      // {User} the user that the message belongs to
 }) {
+  const currentUserID = skygear.currentUser && skygear.currentUser.id;
+
   if(message && user) {
     return (
       <div
@@ -152,7 +155,7 @@ function Message({
           width: '100%',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: (skygear.currentUser && skygear.currentUser.id === user._id) ? 'flex-end' : 'flex-start',
+          justifyContent: (user._id === currentUserID) ? 'flex-end' : 'flex-start',
         }}>
         <div
           style={{
@@ -197,6 +200,7 @@ function render() {
       users,
     },
   } = this;
+  const currentUserID = skygear.currentUser && skygear.currentUser.id;
 
   return (
     <div
@@ -236,7 +240,7 @@ function render() {
                   const typingUsers =
                     Object.keys(users)
                     .map(k => users[k])
-                    .filter(u => u._id !== skygear.currentUser.id)
+                    .filter(u => u._id !== currentUserID)
                     .filter(u => u.typing)
                     .map(u => u.displayName)
                     .join(', ');

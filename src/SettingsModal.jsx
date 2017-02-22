@@ -80,6 +80,7 @@ function render() {
       editingName,
     }
   } = this;
+  const currentUsername = skygear.currentUser && skygear.currentUser.username;
 
   return (
     <Modal
@@ -132,9 +133,7 @@ function render() {
             marginTop: '1rem',
           }}>
           <strong>Username:</strong>
-          <span style={{marginLeft: '0.5rem'}}>
-            {skygear.currentUser && skygear.currentUser.username}
-          </span>
+          <span style={{marginLeft: '0.5rem'}}>{currentUsername}</span>
         </div>
         {(editingName)? (
           <div
