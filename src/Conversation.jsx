@@ -140,6 +140,11 @@ function sendMessage(
   }
 }
 
+function scrollToBottom() {
+  const messageView = document.getElementById('message-view');
+  messageView.scrollTop = messageView.scrollHeight;
+}
+
 // VIEWS ===============================================
 
 function Message({
@@ -260,6 +265,7 @@ function render() {
         </div>
       </div>
       <div
+        id="message-view"
         style={{
           height: '100%',
           width: '100%',
@@ -330,6 +336,7 @@ export default React.createClass({
     subscribeTypingEvent.call(this);
     subscribeMessageEvent.call(this);
   },
+  componentDidUpdate: scrollToBottom,
   componentWillUnmount: function() {
     // FIXME: do unsubscribe when #32 is fixed
     //unsubscribeTypingEvent.call(this);
