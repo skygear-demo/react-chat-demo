@@ -56,11 +56,16 @@ function fetchUsers() {
 }
 
 function fetchMessages() {
+  const { conversation } = this.props;
   skygearChat.getMessages(
-    this.props.conversation
+    conversation
   ).then(messages => {
     console.log('[messages]', messages);
     skygearChat.markAsRead(messages);
+    skygearChat.markAsLastMessageRead(
+      conversation,
+      messages[messages.length - 1]
+    );
     this.setState({messages: messages.reverse()});
   });
 }
