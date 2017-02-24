@@ -105,11 +105,11 @@ function messageEventHandler(event) {
       messages
     }
   } = this;
-  console.log('[message event]', event);
   if (
     event.record_type === 'message' &&
     event.record.conversation_id.id === conversation.id
   ) {
+    console.log('[message event]', event);
     if(event.event_type === 'create') {
       // TODO: deduplicate messages
       // TODO: ensure order by creation date
