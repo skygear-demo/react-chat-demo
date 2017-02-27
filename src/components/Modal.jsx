@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function({
+export default function Modal({
   header,   // Modal header text
   onClose,  // modal close action handler fn
   children, // DOM elements inside modal

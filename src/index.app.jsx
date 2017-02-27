@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import skygear from 'skygear';
 
 import config from './config.json';
-import App from './App.jsx';
+import App from './components/App.jsx';
 
 skygear.config(config.skygearConfig)
 .then(function() {

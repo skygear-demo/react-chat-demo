@@ -22,19 +22,19 @@ export class ConversationSorting {
       const aValue = attributeMap[attribute](a);
       const bValue = attributeMap[attribute](b);
       const sortAscending = orderMap[order];
-      if(aValue > bValue) return sortAscending? -1 :  1;
-      if(aValue < bValue) return sortAscending?  1 : -1;
+      if(aValue > bValue) return sortAscending?  1 : -1;
+      if(aValue < bValue) return sortAscending? -1 :  1;
       return 0;
     };
   }
 }
 
-export class ManagedConversationList {
+export default class ManagedConversationList {
   constructor({
     initialFetch = true,
     pubsubSync = true,
     sortBy = new ConversationSorting('last update','descending'),
-  }) {
+  } = {}) {
     // conversation compare fn (for sorting)
     this._compare = sortBy;
     // conversation IDs in order (without type prefix)
@@ -47,9 +47,8 @@ export class ManagedConversationList {
     if(initialFetch) {
       this.fetch();
     }
-
     if(pubsubSync) {
-      skygearChat.subscribe(this._eventHandler);
+      skygearChat.subscribe(this._eventHandler.bind(this));
     }
   }
   destroy() {
@@ -57,6 +56,7 @@ export class ManagedConversationList {
   }
   _eventHandler(event) {
     if(event.record_type === 'conversation') {
+      console.log(`[conversation event]`, event);
       switch(event.event_type) {
         case 'create':
           this.add(event.record);
@@ -81,15 +81,18 @@ export class ManagedConversationList {
       .forEach(handler => handler(this));
   }
   fetch() {
+    // FIXME: use the getConversations() API when it is fixed
     return skygearChat
-      .getConversations()
+      .getUserConversations()
+      .then(results => results.map(uc => uc.$transient.conversation))
       .then(results => {
+        console.log('[fetched conversations]', results);
         results.forEach(conversation => {
           this._conversations[conversation._id] = conversation;
         });
         this._conversationsUpdated();
-      })
-      .then(_ => this);
+        return this;
+      });
   }
   get length() {
     return this._orderedIDs.length;
@@ -106,6 +109,11 @@ export class ManagedConversationList {
     return this._orderedIDs
       .map(id => this._conversations[id])
       .map(mappingFunction);
+  }
+  filter(predicate) {
+    return this._orderedIDs
+      .map(id => this._conversations[id])
+      .filter(predicate);
   }
   add(conversation) {
     const {_conversations} = this;
@@ -127,7 +135,7 @@ export class ManagedConversationList {
   remove(conversationID) {
     const {_conversations} = this;
     if(_conversations.hasOwnProperty(conversationID)) {
-      delete _conversations[id];
+      delete _conversations[conversationID];
       this._conversationsUpdated();
     }
   }

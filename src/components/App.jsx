@@ -1,7 +1,8 @@
 import React from 'react';
+import skygear from 'skygear';
 import skygearChat from 'skygear-chat';
 
-import ManagedConversationList from './ManagedConversationList.jsx';
+import ManagedConversationList from '../utils/ManagedConversationList.jsx';
 
 import Conversation from './Conversation.jsx';
 import ConversationPreview from './ConversationPreview.jsx';
@@ -28,14 +29,18 @@ function AddButton({
   );
 }
 
-export default class App {
-  constructor() {
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {
       unreadCount         : 0,    // user's total unread message count (int)
       currentModal        : null, // currently displayed modal dialog name (or null)
       currentConversation : null, // currently selected Conversion Record (or null)
     };
     this.conversationList = new ManagedConversationList();
+  }
+  componentDidMount() {
+    // subscribe conversation change
     this.conversationList.subscribe(_ => {
       this.forceUpdate();
     });
@@ -52,6 +57,8 @@ export default class App {
       },
       conversationList,
     } = this;
+    const currentUserID = skygear.currentUser && skygear.currentUser.id;
+
     return (
       <div
         style={{
@@ -72,6 +79,7 @@ export default class App {
           <div
             style={{
               height: '2rem',
+              minHeight: '2rem',
               padding: '1rem 2rem',
               display: 'flex',
               alignItems: 'center',
@@ -95,6 +103,8 @@ export default class App {
               alignItems: 'center',
               padding: '1rem 0',
               borderBottom: '1px solid #888',
+              height: '4rem',
+              minHeight: '4rem',
             }}>
             <AddButton
               text="Direct Chat"
@@ -105,13 +115,16 @@ export default class App {
           </div>
           <div style={{overflowY: 'scroll'}}>
             {
-              conversationList.map(c => (
-                <ConversationPreview
-                  key={c.id + c.updatedAt}
-                  selected={c.id === (currentConversation && currentConversation.id)}
-                  conversation={c}
-                  onClick={_ => this.setState({currentConversation: c})}/>
-              ))
+              conversationList
+                .filter(c => c.participant_count >= 2)
+                .filter(c => c.participant_ids.includes(currentUserID))
+                .map(c => (
+                  <ConversationPreview
+                    key={c.id + c.updatedAt}
+                    selected={c.id === (currentConversation && currentConversation.id)}
+                    conversation={c}
+                    onClick={_ => this.setState({currentConversation: c})}/>
+                ))
             }
           </div>
         </div>

@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import skygear from 'skygear';
 
 import config from './config.json';
-import Authenticate from './Authenticate.jsx';
+import Authenticate from './components/Authenticate.jsx';
 
 skygear.config(config.skygearConfig)
 .then(function() {
