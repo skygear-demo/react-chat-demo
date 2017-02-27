@@ -130,6 +130,8 @@ export default class ManagedConversationList {
     ) {
       _conversations[conversation._id] = conversation;
       this._conversationsUpdated();
+    } else {
+      this.add(conversation);
     }
   }
   remove(conversationID) {

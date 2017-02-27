@@ -98,6 +98,8 @@ export default class ManagedMessageList {
     ) {
       _messages[message._id] = message;
       this._messagesUpdated();
+    } else {
+      this.add(message);
     }
   }
   remove(messageID) {
