@@ -2,11 +2,12 @@ import skygearChat from 'skygear-chat';
 
 export default class ManagedMessageList {
   constructor(conversation, {
-    initialFetch = 50,
-    pubsubSync = true,
+    initialFetch = 50,  // fetch messages on creation (int limit of messages or false)
+    pubsubSync = true,  // automatically sync list with server using pubsub
+    autoRead = true,    // automatically mark all recieved messages as read
   } = {}) {
-    // the conversation this list is managing for
     this._conversation = conversation;
+    this._autoRead = autoRead;
     // message IDs in order (without type prefix)
     this._orderedIDs = [];
     // map of message ID => message object
@@ -63,6 +64,9 @@ export default class ManagedMessageList {
         results.forEach(message => {
           this._messages[message._id] = message;
         });
+        if(this._autoRead) {
+          skygearChat.markAsRead(results);
+        }
         this._messagesUpdated();
         return this;
       });
@@ -88,6 +92,9 @@ export default class ManagedMessageList {
     if(!_messages.hasOwnProperty(message._id)) {
       _messages[message._id] = message;
       this._messagesUpdated();
+      if(this._autoRead) {
+        skygearChat.markAsRead(results);
+      }
     }
   }
   update(message) {
