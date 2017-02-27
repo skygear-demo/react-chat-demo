@@ -58,7 +58,10 @@ export default class DetailsModal extends React.Component {
       conversation,
       newConversationTitle
     ).then(newConversation => {
-      this.setState({loading: false});
+      this.setState({
+        loading: false,
+        editingTitle: false,
+      });
       updateConversationDelegate(newConversation);
     });
   }
@@ -146,7 +149,7 @@ export default class DetailsModal extends React.Component {
               <input
                 type="text"
                 disabled={loading}
-                value={newConversationName}
+                value={newConversationTitle}
                 onChange={e => this.setState({newConversationTitle: e.target.value})}/>
               <span
                 style={{

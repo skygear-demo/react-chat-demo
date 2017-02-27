@@ -93,7 +93,7 @@ export default class ManagedMessageList {
       _messages[message._id] = message;
       this._messagesUpdated();
       if(this._autoRead) {
-        skygearChat.markAsRead(results);
+        skygearChat.markAsRead([message]);
       }
     }
   }
