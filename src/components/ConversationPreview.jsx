@@ -42,6 +42,7 @@ export default class ConversationPreview extends React.Component {
         selected,
         onClick,
         conversation: {
+          unread_count,
           $transient: {
             last_message: {
               body: lastMessage
@@ -96,7 +97,9 @@ export default class ConversationPreview extends React.Component {
             </span>
           )}
         </div>
-        <span></span>
+        <span>
+          {unread_count > 0 ? `(${unread_count})` : ''}
+        </span>
       </div>
     );
   }

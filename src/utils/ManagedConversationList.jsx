@@ -84,7 +84,10 @@ export default class ManagedConversationList {
     // FIXME: use the getConversations() API when it is fixed
     return skygearChat
       .getUserConversations()
-      .then(results => results.map(uc => uc.$transient.conversation))
+      .then(results => results.map(uc => {
+        uc.$transient.conversation.unread_count = uc.unread_count;
+        return uc.$transient.conversation;
+      }))
       .then(results => {
         console.log('[fetched conversations]', results);
         results.forEach(conversation => {
