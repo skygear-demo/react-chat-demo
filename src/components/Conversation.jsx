@@ -92,17 +92,19 @@ export default class Conversation extends React.Component {
   }
   sendMessage(messageBody) {
     if(messageBody.length > 0) {
-      skygearChat.createMessage(
-        this.props.conversation,
-        messageBody,
-      ).then(message => {
-        this.messageList.add(message);
+      const {conversation} = this.props;
+      const message = new skygear.Record('message', {
+        body:             messageBody,
+        metadata:         {},
+        conversation_id:  new skygear.Reference(conversation.id),
+        createdAt:        new Date(),
+        createdBy:        skygear.currentUser.id,
       });
-      // force update the conversation
-      // after a new message is added
-      skygearChat.updateConversation(
-        this.props.conversation
-      );
+      console.log('[create message]', message);
+      this.messageList.add(message);
+      skygear.privateDB.save(message);
+      // force update the conversation on new message to trigger pubsub event
+      skygearChat.updateConversation(conversation);
     }
   }
   render() {
