@@ -11,6 +11,8 @@ import CreateGroupModal from './CreateGroupModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
 import DetailsModal from './DetailsModal.jsx';
 
+
+
 function AddButton({
   text,
   onClick
@@ -136,7 +138,7 @@ export default class App extends React.Component {
         </div>
         {currentConversation && (
           <Conversation
-            key={'Conversation-' + currentConversation.id + currentConversation.updatedAt}
+            key={'Conversation-' + currentConversation.id}
             conversation={currentConversation}
             showDetails={_ => this.setState({currentModal:'details'})}/>
         )}
