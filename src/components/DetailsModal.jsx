@@ -80,7 +80,10 @@ export default class DetailsModal extends React.Component {
   }
   discoverAndAddUser(username) {
     const {
-      props: {conversation},
+      props: {
+        conversation,
+        updateConversationDelegate,
+      },
       state: {users},
     } = this;
     this.setState({loading: true});
