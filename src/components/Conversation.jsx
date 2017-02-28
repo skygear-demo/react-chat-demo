@@ -106,7 +106,6 @@ export default class Conversation extends React.Component {
         createdAt:        new Date(),
         createdBy:        skygear.currentUser.id,
       });
-      console.log('[create message]', message);
       this.messageList.add(message);
       skygear.privateDB.save(message);
       // force update the conversation on new message to trigger pubsub event
