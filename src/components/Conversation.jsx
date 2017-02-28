@@ -30,15 +30,14 @@ export default class Conversation extends React.Component {
       this.props.conversation,
       this.typingEventHandler.bind(this)
     );
+    this.scrollToBottom();
     this.fetchUsers();
   }
   componentDidUpdate(prevProps) {
+    this.scrollToBottom();
     if(this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
       this.fetchUsers();
     }
-    // scroll to the bottom
-    const messageView = document.getElementById('message-view');
-    messageView.scrollTop = messageView.scrollHeight;
   }
   componentWillUnmount() {
     this.messageList.destroy();
@@ -46,6 +45,13 @@ export default class Conversation extends React.Component {
     //skygearChat.unsubscribeTypingIndicator(
     //  this.props.conversation
     //);
+  }
+  scrollToBottom() {
+    // wait for changes to propergate to real DOM
+    setTimeout(_ => {
+      const messageView = document.getElementById('message-view');
+      messageView.scrollTop = messageView.scrollHeight;
+    }, 100);
   }
   fetchUsers() {
     const {
