@@ -99,7 +99,12 @@ export default class DetailsModal extends React.Component {
       return skygearChat.addParticipants(
         conversation,
         [newUser]
-      );
+      ).then(_ => {
+        return skygearChat.addAdmins(
+          conversation,
+          [newUser]
+        );
+      });
     }).then(newConversation => {
       this.setState({loading: false});
       updateConversationDelegate(newConversation);
