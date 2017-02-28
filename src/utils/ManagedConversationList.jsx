@@ -129,7 +129,7 @@ export default class ManagedConversationList {
     const {_conversations} = this;
     if(
       _conversations.hasOwnProperty(conversation._id) &&
-      conversation.updatedAt > _conversations[conversation._id].updatedAt
+      conversation.updatedAt >= _conversations[conversation._id].updatedAt
     ) {
       _conversations[conversation._id] = conversation;
       this._conversationsUpdated();

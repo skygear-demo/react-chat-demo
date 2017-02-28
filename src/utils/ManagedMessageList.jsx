@@ -101,7 +101,7 @@ export default class ManagedMessageList {
     const {_messages} = this;
     if(
       _messages.hasOwnProperty(message._id) &&
-      message.updatedAt > _messages[message._id].updatedAt
+      message.updatedAt >= _messages[message._id].updatedAt
     ) {
       _messages[message._id] = message;
       this._messagesUpdated();
