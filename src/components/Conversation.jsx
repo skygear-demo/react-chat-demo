@@ -14,48 +14,28 @@ export default class Conversation extends React.Component {
     const {title} = props.conversation;
     this.state = {
       title: title || 'loading...', // conversation title (either group name or participant names)
-      users: {},                    // map of userID => user in this conversation
+      users: [],                    // array of users in this conversation
+      typing: {},                   // map of userID => typing status (boolean)
     };
     this.detectTyping = new TypingDetector(props.conversation);
     this.messageList = new ManagedMessageList(props.conversation);
   }
   componentDidMount() {
-    const {
-      title,
-      participant_ids,
-    } = this.props.conversation;
     // subscribe message change
     this.messageList.subscribe(_ => {
       this.forceUpdate();
-    });
-    // fetch users
-    Promise.all(
-      participant_ids
-      .map(userID => UserLoader.get(userID))
-    ).then(results => {
-      let names = results
-        .filter(u => u._id !== skygear.currentUser.id)
-        .map(u => u.displayName)
-        .join(', ');
-      if (names.length > 30) {
-        names = names.substring(0,27) + '...';
-      }
-      let users = {};
-      results.forEach(user => {
-        users[user._id] = user;
-      });
-      this.setState({
-        title: title || names,
-        users,
-      });
     });
     // subscribe to typing events
     skygearChat.subscribeTypingIndicator(
       this.props.conversation,
       this.typingEventHandler.bind(this)
     );
+    this.fetchUsers();
   }
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    if(this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
+      this.fetchUsers();
+    }
     // scroll to the bottom
     const messageView = document.getElementById('message-view');
     messageView.scrollTop = messageView.scrollHeight;
@@ -67,20 +47,48 @@ export default class Conversation extends React.Component {
     //  this.props.conversation
     //);
   }
+  fetchUsers() {
+    const {
+      title,
+      participant_ids,
+    } = this.props.conversation;
+    Promise.all(
+      participant_ids
+      .map(userID => UserLoader.get(userID))
+    ).then(results => {
+      let names = results
+        .filter(u => u._id !== skygear.currentUser.id)
+        .map(u => u.displayName)
+        .join(', ');
+      if (names.length > 30) {
+        names = names.substring(0,27) + '...';
+      }
+      let typing = {};
+      results.forEach(user => {
+        typing[user._id] = false;
+      });
+      this.setState({
+        title: title || names,
+        users: results,
+        typing,
+      });
+    });
+  }
   typingEventHandler(event) {
-    const {users} = this.state;
+    console.log('[typing event]', event);
+    const {typing} = this.state;
     for(let userID in event) {
       const _id = userID.split('/')[1];
       switch(event[userID].event) {
         case 'begin':
-          users[_id].typing = true;
+          typing[_id] = true;
           break;
-        case 'finish':
-          users[_id].typing = false;
+        case 'finished':
+          typing[_id] = false;
           break;
       }
     }
-    this.setState({users});
+    this.setState({typing});
   }
   sendMessage(messageBody) {
     if(messageBody.length > 0) {
@@ -108,6 +116,7 @@ export default class Conversation extends React.Component {
       state: {
         title,
         users,
+        typing,
       },
       messageList,
     } = this;
@@ -148,11 +157,9 @@ export default class Conversation extends React.Component {
               <span style={{fontSize: '1rem'}}>
                 {
                   (_ => {
-                    const typingUsers =
-                      Object.keys(users)
-                      .map(k => users[k])
+                    const typingUsers = users
                       .filter(u => u._id !== currentUserID)
-                      .filter(u => u.typing)
+                      .filter(u => typing[u._id])
                       .map(u => u.displayName)
                       .join(', ');
                     return (typingUsers === '')? '' : `${typingUsers} is typing...`;
