@@ -67,6 +67,7 @@ export default class DetailsModal extends React.Component {
   }
   leaveConversation() {
     const {
+      onClose,
       conversation,
       removeConversationDelegate,
     } = this.props;
@@ -75,6 +76,8 @@ export default class DetailsModal extends React.Component {
       conversation
     ).then(_ => {
       this.setState({loading: false});
+      // close modal after leaving
+      onClose();
       removeConversationDelegate(conversation._id);
     });
   }
