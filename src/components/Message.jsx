@@ -54,6 +54,8 @@ export default class Message extends React.Component {
             padding: '0.5rem',
             border: '1px solid #000',
             borderRadius: '10px',
+            maxWidth: '70%',
+            wordWrap: 'break-word',
           }}>
           {message.body}
         </div>

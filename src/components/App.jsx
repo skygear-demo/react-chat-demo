@@ -75,6 +75,7 @@ export default class App extends React.Component {
           width: '100%',
           height: '100%',
           display: 'flex',
+          overflowX: 'scroll',
         }}>
         <div
           style={{
