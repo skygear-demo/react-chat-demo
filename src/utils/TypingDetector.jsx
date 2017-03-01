@@ -7,7 +7,7 @@ import skygear from 'skygear';
  * Detects whether the user is typing in an input field and send typing events to the server.
  *
  * @example
- * var typing = TypingDetector(conversation); // NOTE: new is not used
+ * var typing = TypingDetector(conversation); // NOTE: this is not a class, don't use 'new'.
  * <input type=text oninput="typing()" />
  *
  * @param {Conversation} conversation - send typing events to this conversation.
