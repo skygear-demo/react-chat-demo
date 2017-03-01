@@ -75,7 +75,6 @@ export default class DetailsModal extends React.Component {
     skygearChat.leaveConversation(
       conversation
     ).then(_ => {
-      this.setState({loading: false});
       // close modal after leaving
       onClose();
       removeConversationDelegate(conversation._id);

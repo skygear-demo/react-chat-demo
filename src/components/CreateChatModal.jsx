@@ -26,10 +26,9 @@ export default class CreateChatModal extends React.Component {
       }
       return skygearChat.createDirectConversation(users[0], null);
     }).then(conversation => {
-      this.setState({loading: false});
-      this.props.addConversationDelegate(conversation);
       // close modal after creation
       this.props.onClose();
+      this.props.addConversationDelegate(conversation);
     }).catch(err => {
       this.setState({
         loading: false,
