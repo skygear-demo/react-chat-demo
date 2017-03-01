@@ -101,6 +101,7 @@ export default class CreateGroupModal extends React.Component {
           </strong>
           <input
             type="text"
+            disabled={loading}
             value={groupName}
             onChange={e => this.setState({groupName: e.target.value})} />
           <strong style={{margin: '2rem 0 0.5rem'}}>
