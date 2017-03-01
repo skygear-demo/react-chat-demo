@@ -50,7 +50,9 @@ export default class Conversation extends React.Component {
     // wait for changes to propergate to real DOM
     setTimeout(_ => {
       const messageView = document.getElementById('message-view');
-      messageView.scrollTop = messageView.scrollHeight;
+      if(messageView) {
+        messageView.scrollTop = messageView.scrollHeight;
+      }
     }, 100);
   }
   fetchUsers() {
