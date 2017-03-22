@@ -15,7 +15,7 @@ export default class Conversation extends React.Component {
     this.state = {
       title: title || 'loading...', // conversation title (either group name or participant names)
       users: [],                    // array of users in this conversation
-      typing: {},                   // map of userID => typing status (boolean)
+      typing: {}                   // map of userID => typing status (boolean)
     };
     this.detectTyping = new TypingDetector(props.conversation);
     this.messageList = new ManagedMessageList(props.conversation);
@@ -35,7 +35,7 @@ export default class Conversation extends React.Component {
   }
   componentDidUpdate(prevProps) {
     this.scrollToBottom();
-    if(this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
+    if (this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
       this.fetchUsers();
     }
   }
@@ -50,7 +50,7 @@ export default class Conversation extends React.Component {
     // wait for changes to propergate to real DOM
     setTimeout(_ => {
       const messageView = document.getElementById('message-view');
-      if(messageView) {
+      if (messageView) {
         messageView.scrollTop = messageView.scrollHeight;
       }
     }, 100);
@@ -58,7 +58,7 @@ export default class Conversation extends React.Component {
   fetchUsers() {
     const {
       title,
-      participant_ids,
+      participant_ids
     } = this.props.conversation;
     Promise.all(
       participant_ids
@@ -69,7 +69,7 @@ export default class Conversation extends React.Component {
         .map(u => u.displayName)
         .join(', ');
       if (names.length > 30) {
-        names = names.substring(0,27) + '...';
+        names = names.substring(0, 27) + '...';
       }
       let typing = {};
       results.forEach(user => {
@@ -78,35 +78,35 @@ export default class Conversation extends React.Component {
       this.setState({
         title: title || names,
         users: results,
-        typing,
+        typing
       });
     });
   }
   typingEventHandler(event) {
     console.log('[typing event]', event);
     const {typing} = this.state;
-    for(let userID in event) {
+    for (let userID in event) {
       const _id = userID.split('/')[1];
-      switch(event[userID].event) {
-        case 'begin':
-          typing[_id] = true;
-          break;
-        case 'finished':
-          typing[_id] = false;
-          break;
+      switch (event[userID].event) {
+      case 'begin':
+        typing[_id] = true;
+        break;
+      case 'finished':
+        typing[_id] = false;
+        break;
       }
     }
     this.setState({typing});
   }
   sendMessage(messageBody) {
-    if(messageBody.length > 0) {
+    if (messageBody.length > 0) {
       const {conversation} = this.props;
       const message = new skygear.Record('message', {
-        body:             messageBody,
-        metadata:         {},
-        conversation_id:  new skygear.Reference(conversation.id),
-        createdAt:        new Date(),
-        createdBy:        skygear.currentUser.id,
+        body: messageBody,
+        metadata: {},
+        conversation_id: new skygear.Reference(conversation.id),
+        createdAt: new Date(),
+        createdBy: skygear.currentUser.id
       });
       this.messageList.add(message);
       skygear.privateDB.save(message);
@@ -119,15 +119,15 @@ export default class Conversation extends React.Component {
       props: {
         showDetails,
         conversation: {
-          participant_count,
-        },
+          participant_count
+        }
       },
       state: {
         title,
         users,
-        typing,
+        typing
       },
-      messageList,
+      messageList
     } = this;
     const currentUserID = skygear.currentUser && skygear.currentUser.id;
 
@@ -138,7 +138,7 @@ export default class Conversation extends React.Component {
           flexDirection: 'column',
           justifyContent: 'space-between',
           width: '75%',
-          height: '100%',
+          height: '100%'
         }}>
         <div
           style={{
@@ -147,14 +147,14 @@ export default class Conversation extends React.Component {
             flexDirection: 'column',
             justifyContent: 'center',
             height: '6rem',
-            borderBottom: '1px solid #000',
+            borderBottom: '1px solid #000'
           }}>
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              width: '100%',
+              width: '100%'
             }}>
             <span></span>
             <div
@@ -171,7 +171,7 @@ export default class Conversation extends React.Component {
                       .filter(u => typing[u._id])
                       .map(u => u.displayName)
                       .join(', ');
-                    return (typingUsers === '')? '' : `${typingUsers} is typing...`;
+                    return typingUsers === '' ? '' : `${typingUsers} is typing...`;
                   })()
                 }
               </span>
@@ -180,7 +180,7 @@ export default class Conversation extends React.Component {
               style={{
                 height: '2rem',
                 cursor: 'pointer',
-                marginRight: '2rem',
+                marginRight: '2rem'
               }}
               onClick={showDetails}
               src="img/info.svg"/>
@@ -192,14 +192,14 @@ export default class Conversation extends React.Component {
             height: '100%',
             width: '100%',
             overflowX: 'hidden',
-            overflowY: 'scroll',
+            overflowY: 'scroll'
           }}>
           {
-            messageList.map((m) => (
+            messageList.map((m) =>
               <Message
                 key={m.id + m.updatedAt}
                 message={m}/>
-            ))
+            )
           }
         </div>
         <div
@@ -208,7 +208,7 @@ export default class Conversation extends React.Component {
             height: '5rem',
             display: 'flex',
             alignItems: 'center',
-            borderTop: '1px solid #000',
+            borderTop: '1px solid #000'
           }}>
           <form
             style={{
@@ -216,7 +216,7 @@ export default class Conversation extends React.Component {
               margin: '1rem',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'space-between'
             }}
             onSubmit={e => {
               e.preventDefault();
@@ -227,7 +227,7 @@ export default class Conversation extends React.Component {
               style={{
                 padding: '0.25rem',
                 fontSize: '1rem',
-                width: '100%',
+                width: '100%'
               }}
               onChange={_ => this.detectTyping()}
               type="text"/>
@@ -236,7 +236,7 @@ export default class Conversation extends React.Component {
                 backgroundColor: '#FFF',
                 border: '1px solid #000',
                 padding: '0.5rem 1rem',
-                marginLeft: '1rem',
+                marginLeft: '1rem'
               }}
               value="Send"
               type="submit"/>

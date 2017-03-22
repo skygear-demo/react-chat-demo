@@ -17,7 +17,7 @@ export default class ManagedMessageList {
   constructor(conversation, {
     initialFetch = 50,  // fetch messages on creation (int limit of messages or false)
     pubsubSync = true,  // automatically sync list with server using pubsub
-    autoRead = true,    // automatically mark all recieved messages as read
+    autoRead = true    // automatically mark all recieved messages as read
   } = {}) {
     this._conversation = conversation;
     this._autoRead = autoRead;
@@ -28,10 +28,10 @@ export default class ManagedMessageList {
     // map of subscription ID => event handler
     this._updateHandlers = {};
 
-    if(initialFetch) {
+    if (initialFetch) {
       this.fetch(initialFetch);
     }
-    if(pubsubSync) {
+    if (pubsubSync) {
       skygearChat.subscribe(this._eventHandler.bind(this));
     }
   }
@@ -46,21 +46,21 @@ export default class ManagedMessageList {
    * @private
    */
   _eventHandler(event) {
-    if(
+    if (
       event.record_type === 'message' &&
       event.record.conversation_id.id === this._conversation.id
     ) {
-      console.log(`[message event]`, event);
-      switch(event.event_type) {
-        case 'create':
-          this.add(event.record);
-          break;
-        case 'update':
-          this.update(event.record);
-          break;
-        case 'delete':
-          this.remove(event.record._id);
-          break;
+      console.log('[message event]', event);
+      switch (event.event_type) {
+      case 'create':
+        this.add(event.record);
+        break;
+      case 'update':
+        this.update(event.record);
+        break;
+      case 'delete':
+        this.remove(event.record._id);
+        break;
       }
     }
   }
@@ -71,7 +71,7 @@ export default class ManagedMessageList {
     const {_messages, _updateHandlers} = this;
     this._orderedIDs = Object.keys(_messages)
       .map(id => _messages[id])
-      .sort((a,b) => a.createdAt - b.createdAt)
+      .sort((a, b) => a.createdAt - b.createdAt)
       .map(message => message._id);
     Object.keys(_updateHandlers)
       .map(key => _updateHandlers[key])
@@ -94,7 +94,7 @@ export default class ManagedMessageList {
         results.forEach(message => {
           this._messages[message._id] = message;
         });
-        if(this._autoRead) {
+        if (this._autoRead) {
           skygearChat.markAsRead(results);
         }
         this._messagesUpdated();
@@ -117,9 +117,9 @@ export default class ManagedMessageList {
   get(indexOrID) {
     const {_messages, _orderedIDs} = this;
     if (typeof indexOrID === 'number') {
-      return _messages[_orderedIDs[indexOrID]]
+      return _messages[_orderedIDs[indexOrID]];
     } else {
-      return _messages[indexOrID]
+      return _messages[indexOrID];
     }
   }
   /**
@@ -150,10 +150,10 @@ export default class ManagedMessageList {
    */
   add(message) {
     const {_messages} = this;
-    if(!_messages.hasOwnProperty(message._id)) {
+    if (!_messages.hasOwnProperty(message._id)) {
       _messages[message._id] = message;
       this._messagesUpdated();
-      if(this._autoRead) {
+      if (this._autoRead) {
         skygearChat.markAsRead([message]);
       }
     }
@@ -167,7 +167,7 @@ export default class ManagedMessageList {
    */
   update(message) {
     const {_messages} = this;
-    if(
+    if (
       _messages.hasOwnProperty(message._id) &&
       message.updatedAt >= _messages[message._id].updatedAt
     ) {
@@ -185,7 +185,7 @@ export default class ManagedMessageList {
    */
   remove(messageID) {
     const {_messages} = this;
-    if(_messages.hasOwnProperty(messageID)) {
+    if (_messages.hasOwnProperty(messageID)) {
       delete _messages[messageID];
       this._messagesUpdated();
     }

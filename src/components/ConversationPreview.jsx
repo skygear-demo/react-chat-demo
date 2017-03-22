@@ -9,14 +9,14 @@ export default class ConversationPreview extends React.Component {
     super(props);
     const {title} = props.conversation;
     this.state = {
-      title:    title || 'loading...',  // conversation title (either group name or participant names)
-      imageURL: 'img/loading.svg',      // conversation image URL
-    }
+      title: title || 'loading...',  // conversation title (either group name or participant names)
+      imageURL: 'img/loading.svg'      // conversation image URL
+    };
   }
   componentDidMount() {
     const {
       title,
-      participant_ids,
+      participant_ids
     } = this.props.conversation;
     // fetch users
     Promise.all(
@@ -28,11 +28,11 @@ export default class ConversationPreview extends React.Component {
         .map(u => u.displayName)
         .join(', ');
       if (names.length > 30) {
-        names = names.substring(0,27) + '...';
+        names = names.substring(0, 27) + '...';
       }
       this.setState({
-        title: title || names, 
-        imageURL: (users[0].avatar)? users[0].avatar.url : 'img/avatar.svg',
+        title: title || names,
+        imageURL: users[0].avatar ? users[0].avatar.url : 'img/avatar.svg'
       });
     });
   }
@@ -52,8 +52,8 @@ export default class ConversationPreview extends React.Component {
       },
       state: {
         title,
-        imageURL,
-      },
+        imageURL
+      }
     } = this;
 
     return (
@@ -64,8 +64,8 @@ export default class ConversationPreview extends React.Component {
           alignItems: 'center',
           padding: '1rem 2rem',
           borderBottom: '1px solid #DDD',
-          backgroundColor: selected? '#EEE' : '#FFF',
-          cursor: 'pointer',
+          backgroundColor: selected ? '#EEE' : '#FFF',
+          cursor: 'pointer'
         }}>
         <div
           style={{
@@ -76,7 +76,7 @@ export default class ConversationPreview extends React.Component {
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             width: '3rem',
-            height: '3rem',
+            height: '3rem'
           }}>
         </div>
         <div
@@ -84,18 +84,18 @@ export default class ConversationPreview extends React.Component {
             padding: '0 1rem',
             display: 'flex',
             flexDirection: 'column',
-            width: '70%',
+            width: '70%'
           }}>
           <h2 style={{margin: '0'}}>{title}</h2>
-          {lastMessage && (
+          {lastMessage &&
             <span
               style={{
                 marginTop: '0.5rem',
-                color: '#AAA',
+                color: '#AAA'
               }}>
-              { lastMessage.length > 23 ? lastMessage.substring(0,20)+'...' : lastMessage }
+              { lastMessage.length > 23 ? lastMessage.substring(0, 20) + '...' : lastMessage }
             </span>
-          )}
+          }
         </div>
         <span>
           {unread_count > 0 ? `(${unread_count})` : ''}

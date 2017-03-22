@@ -3,7 +3,7 @@ import React from 'react';
 export default function Modal({
   header,   // Modal header text
   onClose,  // modal close action handler fn
-  children, // DOM elements inside modal
+  children // DOM elements inside modal
 }) {
   return (
     <div
@@ -16,7 +16,7 @@ export default function Modal({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        backgroundColor: 'rgba(0,0,0,0.7)'
       }}>
       <div
         style={{
@@ -24,7 +24,7 @@ export default function Modal({
           backgroundColor: '#FFF',
           padding: '1rem',
           maxHeight: '90%',
-          overflowY: 'scroll',
+          overflowY: 'scroll'
         }}>
         <header>
           <span
@@ -34,14 +34,14 @@ export default function Modal({
               cursor: 'pointer',
               position: 'absolute',
               right: '1.2rem',
-              top: '1rem',
+              top: '1rem'
             }}
             onClick={onClose}>
             ×
           </span>
           <h1 style={{
             textAlign: 'center',
-            margin: '0',
+            margin: '0'
           }}>
             {header}
           </h1>

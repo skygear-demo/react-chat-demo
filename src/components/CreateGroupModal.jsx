@@ -8,14 +8,14 @@ export default class CreateGroupModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading:      false,  // modal loading state (boolean)
+      loading: false,  // modal loading state (boolean)
       errorMessage: '',     // error message to display (or '')
-      members:      [],     // list of members (users) to add to the new group
-      groupName:    '',     // group name input text
+      members: [],     // list of members (users) to add to the new group
+      groupName: ''     // group name input text
     };
   }
   discoverUser(username) {
-    if(username === skygear.currentUser.username) {
+    if (username === skygear.currentUser.username) {
       this.setState({errorMessage: 'Error: cannot create conversation with yourself'});
       return;
     }
@@ -23,36 +23,36 @@ export default class CreateGroupModal extends React.Component {
     skygear.discoverUserByUsernames(
       username
     ).then(users => {
-      if(users.length <= 0) {
-        return Promise.reject({message: `user "${username}" not found`})
+      if (users.length <= 0) {
+        return Promise.reject({message: `user "${username}" not found`});
       }
       const {members} = this.state;
-      if(members.filter(u => u.id === users[0].id).length > 0) {
+      if (members.filter(u => u.id === users[0].id).length > 0) {
         return Promise.reject({message: `Error: user "${username}" already added`});
       }
       members.push(users[0]);
       this.setState({
         loading: false,
         errorMessage: '',
-        members,
+        members
       });
     }).catch(err => {
       this.setState({
         loading: false,
-        errorMessage: `Error: ${err.message}`,
+        errorMessage: `Error: ${err.message}`
       });
     });
   }
   createGroup() {
     const {
       members,
-      groupName,
+      groupName
     } = this.state;
-    if(groupName === '') {
+    if (groupName === '') {
       this.setState({errorMessage: 'Error: missing group name'});
       return;
     }
-    if(members.length < 2) {
+    if (members.length < 2) {
       this.setState({errorMessage: 'Error: groups must have 3 or more participants'});
       return;
     }
@@ -67,21 +67,21 @@ export default class CreateGroupModal extends React.Component {
     }).catch(err => {
       this.setState({
         loading: false,
-        errorMessage: `Error: ${err.message}`,
+        errorMessage: `Error: ${err.message}`
       });
     });
   }
   render() {
     const {
       props: {
-        onClose,
+        onClose
       },
       state: {
         loading,
         errorMessage,
         groupName,
-        members,
-      },
+        members
+      }
     } = this;
 
     return (
@@ -93,7 +93,7 @@ export default class CreateGroupModal extends React.Component {
             display: 'flex',
             flexDirection: 'column',
             width: '25rem',
-            padding: '1rem',
+            padding: '1rem'
           }}>
           <strong style={{margin: '2rem 0 0.5rem'}}>
             Name:
@@ -107,13 +107,13 @@ export default class CreateGroupModal extends React.Component {
             Participants:
           </strong>
           {
-            members.map(user => (
+            members.map(user =>
               <div
                 key={user.id}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  margin: '0.5rem 0',
+                  margin: '0.5rem 0'
                 }}>
                 <div
                   style={{
@@ -124,14 +124,14 @@ export default class CreateGroupModal extends React.Component {
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                     width: '3rem',
-                    height: '3rem',
+                    height: '3rem'
                   }}>
                 </div>
                 <span style={{marginLeft: '1rem'}}>
                   {user.displayName}
                 </span>
               </div>
-            ))
+            )
           }
           <form
             onSubmit={e => {
@@ -143,7 +143,7 @@ export default class CreateGroupModal extends React.Component {
             style={{
               display: 'flex',
               alignItems: 'center',
-              margin: '0.5rem 0',
+              margin: '0.5rem 0'
             }}>
             <input
               type='submit'
@@ -157,28 +157,28 @@ export default class CreateGroupModal extends React.Component {
                 height: '3rem',
                 fontSize: '2rem',
                 backgroundColor: '#FFF',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }} />
             <input
               type='text'
               disabled={loading}
               style={{
                 marginLeft: '1rem',
-                width: '100%',
+                width: '100%'
               }} />
           </form>
           <p>{errorMessage}</p>
           <div
             style={{
               alignSelf: 'center',
-              marginTop: '2rem',
+              marginTop: '2rem'
             }}>
             <button
               style={{
                 backgroundColor: '#FFF',
                 border: '1px solid #000',
                 padding: '1rem 2rem',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
               disabled={loading}
               onClick={_ => this.createGroup()}>

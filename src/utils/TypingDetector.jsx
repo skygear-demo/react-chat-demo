@@ -14,13 +14,13 @@ import skygear from 'skygear';
  * @param {Object} [options]
  * @param {number} [options.debounceTime = 3000] - interger of miliseconds to debounce calls
  */
-export default function TypingDetector (
+export default function TypingDetector(
   conversation,
   {
     debounceTime = 3000
   } = {}
 ) {
-  if(!(
+  if (!(
     conversation instanceof skygear.Record &&
     conversation.recordType === 'conversation'
   )) {
@@ -47,8 +47,8 @@ export default function TypingDetector (
       stopTyping, debounceTime
     );
   }
-  return function() {
-    if(debounceTimer) {
+  return function () {
+    if (debounceTimer) {
       resetTimer();
     } else {
       startTyping();

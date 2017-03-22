@@ -10,31 +10,31 @@ export default class DetailsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      loading:              false,  // modal loading state (boolean)
-      editingTitle:         false,  // conversation name editing state (boolean)
+      loading: false,  // modal loading state (boolean)
+      editingTitle: false,  // conversation name editing state (boolean)
       newConversationTitle: '',     // new conversation title (text input value)
-      errorMessage:         '',     // error message to display
-      users:                [],     // conversation users
+      errorMessage: '',     // error message to display
+      users: []     // conversation users
     };
   }
   componentDidMount() {
     this.fetchUsers();
   }
   componentDidUpdate(prevProps) {
-    if(this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
+    if (this.props.conversation.updatedAt > prevProps.conversation.updatedAt) {
       this.fetchUsers();
     }
   }
   fetchUsers() {
     const {conversation} = this.props;
-    this.setState({loading:true});
+    this.setState({loading: true});
     Promise.all(
       conversation.participant_ids
       .map(userID => UserLoader.get(userID))
     ).then(users => {
       this.setState({
         users,
-        loading: false,
+        loading: false
       });
     });
   }
@@ -42,16 +42,16 @@ export default class DetailsModal extends React.Component {
     const {title} = this.props.conversation;
     this.setState({
       newConversationTitle: title,
-      editingTitle: true,
+      editingTitle: true
     });
   }
   changeTitle() {
     const {
       props: {
         conversation,
-        updateConversationDelegate,
+        updateConversationDelegate
       },
-      state: {newConversationTitle},
+      state: {newConversationTitle}
     } = this;
     this.setState({loading: true});
     skygearChat.updateConversation(
@@ -60,7 +60,7 @@ export default class DetailsModal extends React.Component {
     ).then(newConversation => {
       this.setState({
         loading: false,
-        editingTitle: false,
+        editingTitle: false
       });
       updateConversationDelegate(newConversation);
     });
@@ -69,7 +69,7 @@ export default class DetailsModal extends React.Component {
     const {
       onClose,
       conversation,
-      removeConversationDelegate,
+      removeConversationDelegate
     } = this.props;
     this.setState({loading: true});
     skygearChat.leaveConversation(
@@ -84,19 +84,19 @@ export default class DetailsModal extends React.Component {
     const {
       props: {
         conversation,
-        updateConversationDelegate,
+        updateConversationDelegate
       },
-      state: {users},
+      state: {users}
     } = this;
     this.setState({loading: true});
     skygear.discoverUserByUsernames(
       username
     ).then(([newUser]) => {
-      if(!newUser) {
-        return Promise.reject({message: `user "${username}" not found`})
+      if (!newUser) {
+        return Promise.reject({message: `user "${username}" not found`});
       }
-      if(users.filter(u => u.id === newUser.id).length > 0) {
-        return Promise.reject({message: `user "${username}" already added`})
+      if (users.filter(u => u.id === newUser.id).length > 0) {
+        return Promise.reject({message: `user "${username}" already added`});
       }
       return skygearChat.addParticipants(
         conversation,
@@ -113,7 +113,7 @@ export default class DetailsModal extends React.Component {
     }).catch(err => {
       this.setState({
         loading: false,
-        errorMessage: `Error: ${err.message}`,
+        errorMessage: `Error: ${err.message}`
       });
     });
   }
@@ -121,18 +121,18 @@ export default class DetailsModal extends React.Component {
     const {
       props: {
         conversation: {
-          title:                    conversationTitle,
-          distinct_by_participants: directChat,
+          title: conversationTitle,
+          distinct_by_participants: directChat
         },
-        onClose,
+        onClose
       },
       state: {
         loading,
         editingTitle,
         newConversationTitle,
         errorMessage,
-        users,
-      },
+        users
+      }
     } = this;
 
     return (
@@ -144,17 +144,17 @@ export default class DetailsModal extends React.Component {
             display: 'flex',
             flexDirection: 'column',
             width: '21rem',
-            padding: '1rem',
+            padding: '1rem'
           }}>
           <strong style={{margin: '2rem 0 0.5rem'}}>
             Conversation Name:
           </strong>
-          {(editingTitle)? (
+          {editingTitle ?
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '1rem',
+                marginTop: '1rem'
               }}>
               <input
                 type="text"
@@ -164,7 +164,7 @@ export default class DetailsModal extends React.Component {
               <span
                 style={{
                   cursor: 'pointer',
-                  fontSize: '1.3rem',
+                  fontSize: '1.3rem'
                 }}
                 onClick={_ => this.setState({editingTitle: false})}>
                 ✕
@@ -172,18 +172,18 @@ export default class DetailsModal extends React.Component {
               <span
                 style={{
                   cursor: 'pointer',
-                  fontSize: '1.5rem',
+                  fontSize: '1.5rem'
                 }}
                 onClick={_ => this.changeTitle()}>
                 ✓
               </span>
             </div>
-          ) : (
+           :
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '1rem',
+                marginTop: '1rem'
               }}>
               <span>{conversationTitle || 'Not set.'}</span>
               <img
@@ -191,25 +191,25 @@ export default class DetailsModal extends React.Component {
                 style={{
                   marginLeft: '1rem',
                   height: '1rem',
-                  cursor: 'pointer',
+                  cursor: 'pointer'
                 }}
                 onClick={_ => this.editTitle()}/>
             </div>
-          )}
+          }
           <strong style={{margin: '2rem 0 0.5rem'}}>
             Participants:
           </strong>
-          { loading && (
+          { loading &&
             <p>loading...</p>
-          )}
+          }
           {
-            users.map(u => (
+            users.map(u =>
               <div
                 key={u.id}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  margin: '0.5rem 0',
+                  margin: '0.5rem 0'
                 }}>
                 <div
                   style={{
@@ -220,16 +220,16 @@ export default class DetailsModal extends React.Component {
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',
                     width: '3rem',
-                    height: '3rem',
+                    height: '3rem'
                   }}>
                 </div>
                 <span style={{marginLeft: '1rem'}}>
                   {u.displayName}
                 </span>
               </div>
-            ))
+            )
           }
-          { !directChat && (
+          { !directChat &&
             <form
               onSubmit={e => {
                 e.preventDefault();
@@ -240,7 +240,7 @@ export default class DetailsModal extends React.Component {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                margin: '0.5rem 0',
+                margin: '0.5rem 0'
               }}>
               <input
                 type='submit'
@@ -254,37 +254,37 @@ export default class DetailsModal extends React.Component {
                   height: '3rem',
                   fontSize: '2rem',
                   backgroundColor: '#FFF',
-                  cursor: 'pointer',
+                  cursor: 'pointer'
                 }} />
               <input
                 type='text'
                 disabled={loading}
                 style={{
                   marginLeft: '1rem',
-                  width: '100%',
+                  width: '100%'
                 }} />
             </form>
-          )}
+          }
           <p>{errorMessage}</p>
-          { !directChat && (
+          { !directChat &&
             <div
               style={{
                 alignSelf: 'center',
-                marginTop: '2rem',
+                marginTop: '2rem'
               }}>
               <button
                 style={{
                   backgroundColor: '#FFF',
                   border: '1px solid #000',
                   padding: '1rem 2rem',
-                  cursor: 'pointer',
+                  cursor: 'pointer'
                 }}
                 disabled={loading}
                 onClick={_ => this.leaveConversation()}>
                 Leave Chat
               </button>
             </div>
-          )}
+          }
         </div>
       </Modal>
     );

@@ -8,7 +8,7 @@ import config from './config.json';
 import Authenticate from './components/Authenticate.jsx';
 
 skygear.config(config.skygearConfig)
-.then(function() {
+.then(function () {
   const root = document.createElement('div');
   document.body.appendChild(root);
   ReactDOM.render(<Authenticate login/>, root);
