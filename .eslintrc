@@ -170,7 +170,9 @@
     ],
     "semi": 2,
     "keyword-spacing": 2,
-    "complexity": [2, 10]
+    "complexity": [2, 10],
+    "react/jsx-uses-react": 2,
+    "react/jsx-uses-vars": 2
   },
   "env": {
     "node": true,
@@ -181,7 +183,13 @@
     "modules": true
   },
   "parser": "babel-eslint",
+  "plugins": [
+    "react"
+  ],
   "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "ecmaVersion": 6,
     "sourceType": "module"
   }

@@ -19,6 +19,7 @@
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
     "eslint": "^3.18.0",
+    "eslint-plugin-react": "^6.10.3",
     "html-webpack-plugin": "^2.26.0",
     "json-loader": "^0.5.4",
     "style-loader": "^0.13.1",
