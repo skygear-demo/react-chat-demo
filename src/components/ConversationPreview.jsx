@@ -1,6 +1,5 @@
 import React from 'react';
 import skygear from 'skygear';
-import skygearChat from 'skygear-chat';
 
 import UserLoader from '../utils/UserLoader.jsx';
 

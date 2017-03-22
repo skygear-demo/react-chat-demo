@@ -181,7 +181,7 @@ export default class CreateGroupModal extends React.Component {
                 cursor: 'pointer'
               }}
               disabled={loading}
-              onClick={_ => this.createGroup()}>
+              onClick={() => this.createGroup()}>
               Create Group
             </button>
           </div>

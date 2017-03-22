@@ -72,7 +72,7 @@ export default class Authenticate extends React.Component {
     skygear.loginWithUsername(
       username,
       password
-    ).then(_ => {
+    ).then(() => {
       window.location.href = 'app.html';
     }).catch(result => {
       this.setState({
@@ -101,7 +101,7 @@ export default class Authenticate extends React.Component {
           displayName: username
         })
       );
-    }).then(_ => {
+    }).then(() => {
       window.location.href = 'app.html';
     }).catch(result => {
       this.setState({
@@ -192,7 +192,7 @@ export default class Authenticate extends React.Component {
         {errorMessage &&
           <ErrorModal
             message={errorMessage}
-            onClose={_ => this.setState({errorMessage: null})}/>
+            onClose={() => this.setState({errorMessage: null})}/>
         }
       </div>
     );

@@ -74,7 +74,7 @@ export default class DetailsModal extends React.Component {
     this.setState({loading: true});
     skygearChat.leaveConversation(
       conversation
-    ).then(_ => {
+    ).then(() => {
       // close modal after leaving
       onClose();
       removeConversationDelegate(conversation._id);
@@ -101,7 +101,7 @@ export default class DetailsModal extends React.Component {
       return skygearChat.addParticipants(
         conversation,
         [newUser]
-      ).then(_ => {
+      ).then(() => {
         return skygearChat.addAdmins(
           conversation,
           [newUser]
@@ -166,7 +166,7 @@ export default class DetailsModal extends React.Component {
                   cursor: 'pointer',
                   fontSize: '1.3rem'
                 }}
-                onClick={_ => this.setState({editingTitle: false})}>
+                onClick={() => this.setState({editingTitle: false})}>
                 ✕
               </span>
               <span
@@ -174,7 +174,7 @@ export default class DetailsModal extends React.Component {
                   cursor: 'pointer',
                   fontSize: '1.5rem'
                 }}
-                onClick={_ => this.changeTitle()}>
+                onClick={() => this.changeTitle()}>
                 ✓
               </span>
             </div>
@@ -193,7 +193,7 @@ export default class DetailsModal extends React.Component {
                   height: '1rem',
                   cursor: 'pointer'
                 }}
-                onClick={_ => this.editTitle()}/>
+                onClick={() => this.editTitle()}/>
             </div>
           }
           <strong style={{margin: '2rem 0 0.5rem'}}>
@@ -280,7 +280,7 @@ export default class DetailsModal extends React.Component {
                   cursor: 'pointer'
                 }}
                 disabled={loading}
-                onClick={_ => this.leaveConversation()}>
+                onClick={() => this.leaveConversation()}>
                 Leave Chat
               </button>
             </div>

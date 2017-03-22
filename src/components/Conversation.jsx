@@ -22,7 +22,7 @@ export default class Conversation extends React.Component {
   }
   componentDidMount() {
     // subscribe message change
-    this.messageList.subscribe(_ => {
+    this.messageList.subscribe(() => {
       this.forceUpdate();
     });
     // subscribe to typing events
@@ -48,7 +48,7 @@ export default class Conversation extends React.Component {
   }
   scrollToBottom() {
     // wait for changes to propergate to real DOM
-    setTimeout(_ => {
+    setTimeout(() => {
       const messageView = document.getElementById('message-view');
       if (messageView) {
         messageView.scrollTop = messageView.scrollHeight;
@@ -165,7 +165,7 @@ export default class Conversation extends React.Component {
               <strong>{title}</strong> {` (${participant_count} people)`} <br/>
               <span style={{fontSize: '1rem'}}>
                 {
-                  (_ => {
+                  (() => {
                     const typingUsers = users
                       .filter(u => u._id !== currentUserID)
                       .filter(u => typing[u._id])
@@ -229,7 +229,7 @@ export default class Conversation extends React.Component {
                 fontSize: '1rem',
                 width: '100%'
               }}
-              onChange={_ => this.detectTyping()}
+              onChange={() => this.detectTyping()}
               type="text"/>
             <input
               style={{

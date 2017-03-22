@@ -1,6 +1,5 @@
 import React from 'react';
 import skygear from 'skygear';
-import skygearChat from 'skygear-chat';
 
 import Modal from './Modal.jsx';
 
@@ -53,7 +52,7 @@ export default class SettingsModal extends React.Component {
         _id: 'user/' + skygear.currentUser.id,
         displayName: newDisplayName
       })
-    ).then(_ => {
+    ).then(() => {
       this.setState({
         loading: false,
         displayName: newDisplayName,
@@ -70,7 +69,7 @@ export default class SettingsModal extends React.Component {
   }
   logout() {
     this.setState({loading: true});
-    skygear.logout().then(_ => {
+    skygear.logout().then(() => {
       this.setState({loading: false});
       window.location.href = 'login.html';
     });
@@ -162,7 +161,7 @@ export default class SettingsModal extends React.Component {
                   cursor: 'pointer',
                   fontSize: '1.3rem'
                 }}
-                onClick={_ => this.setState({editingName: false})}>
+                onClick={() => this.setState({editingName: false})}>
                 ✕
               </span>
               <span
@@ -170,7 +169,7 @@ export default class SettingsModal extends React.Component {
                   cursor: 'pointer',
                   fontSize: '1.5rem'
                 }}
-                onClick={_ => this.changeName()}>
+                onClick={() => this.changeName()}>
                 ✓
               </span>
             </div>
@@ -192,7 +191,7 @@ export default class SettingsModal extends React.Component {
                   height: '1rem',
                   cursor: 'pointer'
                 }}
-                onClick={_ => this.editName()}/>
+                onClick={() => this.editName()}/>
             </div>
           }
         </div>
@@ -207,7 +206,7 @@ export default class SettingsModal extends React.Component {
               border: '1px solid #000',
               padding: '1rem 2rem'
             }}
-            onClick={_ => this.logout()}>
+            onClick={() => this.logout()}>
             Logout
           </button>
         </div>

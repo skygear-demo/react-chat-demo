@@ -40,9 +40,10 @@ export default class App extends React.Component {
     };
     this.conversationList = new ManagedConversationList();
   }
+
   componentDidMount() {
     // subscribe conversation change
-    this.conversationList.subscribe(_ => {
+    this.conversationList.subscribe(() => {
       const {currentConversation} = this.state;
       if (currentConversation) {
         this.setState({
@@ -56,6 +57,7 @@ export default class App extends React.Component {
       this.setState({unreadCount: result.message});
     });
   }
+
   render() {
     const {
       state: {
@@ -65,7 +67,6 @@ export default class App extends React.Component {
       },
       conversationList
     } = this;
-    const currentUserID = skygear.currentUser && skygear.currentUser.id;
 
     return (
       <div
@@ -103,7 +104,7 @@ export default class App extends React.Component {
                 cursor: 'pointer',
                 height: '2rem'
               }}
-              onClick={_ => this.setState({currentModal: 'settings'})}/>
+              onClick={() => this.setState({currentModal: 'settings'})}/>
           </div>
           <div
             style={{
@@ -117,10 +118,10 @@ export default class App extends React.Component {
             }}>
             <AddButton
               text="Direct Chat"
-              onClick={_ => this.setState({currentModal: 'createChat'})}/>
+              onClick={() => this.setState({currentModal: 'createChat'})}/>
             <AddButton
               text="Group"
-              onClick={_ => this.setState({currentModal: 'createGroup'})}/>
+              onClick={() => this.setState({currentModal: 'createGroup'})}/>
           </div>
           <div style={{overflowY: 'scroll'}}>
             {
@@ -131,7 +132,7 @@ export default class App extends React.Component {
                     key={'ConversationPreview-' + c.id + c.updatedAt}
                     selected={c.id === (currentConversation && currentConversation.id)}
                     conversation={c}
-                    onClick={_ => this.setState({currentConversation: c})}/>
+                    onClick={() => this.setState({currentConversation: c})}/>
                 )
             }
           </div>
@@ -140,7 +141,7 @@ export default class App extends React.Component {
           <Conversation
             key={'Conversation-' + currentConversation.id}
             conversation={currentConversation}
-            showDetails={_ => this.setState({currentModal: 'details'})}/>
+            showDetails={() => this.setState({currentModal: 'details'})}/>
         }
         {(currentModal => {
           switch (currentModal) {
@@ -148,18 +149,18 @@ export default class App extends React.Component {
             return (
                 <CreateGroupModal
                   addConversationDelegate={c => conversationList.add(c)}
-                  onClose={_ => this.setState({currentModal: null})}/>
+                  onClose={() => this.setState({currentModal: null})}/>
             );
           case 'createChat':
             return (
                 <CreateChatModal
                   addConversationDelegate={c => conversationList.add(c)}
-                  onClose={_ => this.setState({currentModal: null})}/>
+                  onClose={() => this.setState({currentModal: null})}/>
             );
           case 'settings':
             return (
                 <SettingsModal
-                  onClose={_ => this.setState({currentModal: null})}/>
+                  onClose={() => this.setState({currentModal: null})}/>
             );
           case 'details':
             return (
@@ -168,7 +169,7 @@ export default class App extends React.Component {
                   conversation={currentConversation}
                   updateConversationDelegate={c => conversationList.update(c)}
                   removeConversationDelegate={id => conversationList.remove(id)}
-                  onClose={_ => this.setState({currentModal: null})}/>
+                  onClose={() => this.setState({currentModal: null})}/>
             );
           default:
             return null;
