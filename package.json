@@ -7,15 +7,18 @@
     "start": "node misc/open.js",
     "build": "webpack --progress",
     "watch": "webpack --progress --watch",
-    "deploy": "bash misc/deploy.sh"
+    "deploy": "bash misc/deploy.sh",
+    "lint": "eslint src/*.jsx src/*/*.jsx"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
+    "babel-eslint": "^7.2.0",
     "babel-loader": "^6.2.10",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-react": "^6.16.0",
     "copy-webpack-plugin": "^4.0.1",
     "css-loader": "^0.26.1",
+    "eslint": "^3.18.0",
     "html-webpack-plugin": "^2.26.0",
     "json-loader": "^0.5.4",
     "style-loader": "^0.13.1",
