@@ -6,7 +6,7 @@ node_js:
 - v4
 
 install:
-  - npm install skygear
+  - cd chat-SDK-JS && npm install && cd ..
   - npm install
 
 notifications:
