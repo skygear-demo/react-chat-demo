@@ -31,7 +31,8 @@ export class ConversationSorting {
       attributeMap.hasOwnProperty(attribute) &&
       orderMap.hasOwnProperty(order)
     )) {
-      throw new Error('invalid conversation sorting parameters: ' + attribute + ' ' + order);
+      throw new Error('invalid conversation sorting parameters: ' +
+        attribute + ' ' + order);
     }
     return function (a, b) {
       const aValue = attributeMap[attribute](a);

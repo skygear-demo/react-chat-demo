@@ -92,7 +92,8 @@ export default class ConversationPreview extends React.Component {
                 marginTop: '0.5rem',
                 color: '#AAA'
               }}>
-              { lastMessage.length > 23 ? lastMessage.substring(0, 20) + '...' : lastMessage }
+              { lastMessage.length > 23 ?
+                  lastMessage.substring(0, 20) + '...' : lastMessage }
             </span>
           }
         </div>

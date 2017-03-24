@@ -16,7 +16,9 @@ export default class CreateGroupModal extends React.Component {
   }
   discoverUser(username) {
     if (username === skygear.currentUser.username) {
-      this.setState({errorMessage: 'Error: cannot create conversation with yourself'});
+      this.setState({
+        errorMessage: 'Error: cannot create conversation with yourself'
+      });
       return;
     }
     this.setState({loading: true});
@@ -28,7 +30,9 @@ export default class CreateGroupModal extends React.Component {
       }
       const {members} = this.state;
       if (members.filter(u => u.id === users[0].id).length > 0) {
-        return Promise.reject({message: `Error: user "${username}" already added`});
+        return Promise.reject({
+          message: `Error: user "${username}" already added`
+        });
       }
       members.push(users[0]);
       this.setState({
@@ -53,7 +57,9 @@ export default class CreateGroupModal extends React.Component {
       return;
     }
     if (members.length < 2) {
-      this.setState({errorMessage: 'Error: groups must have 3 or more participants'});
+      this.setState({
+        errorMessage: 'Error: groups must have 3 or more participants'
+      });
       return;
     }
     this.setState({loading: true});
@@ -119,7 +125,8 @@ export default class CreateGroupModal extends React.Component {
                   style={{
                     border: '1px solid #000',
                     borderRadius: '100%',
-                    backgroundImage: `url(${user.avatar ? user.avatar.url : 'img/avatar.svg'})`,
+                    backgroundImage: `url(${user.avatar ?
+                        user.avatar.url : 'img/avatar.svg'})`,
                     backgroundSize: 'contain',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',

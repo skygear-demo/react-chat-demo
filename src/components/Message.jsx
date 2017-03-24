@@ -39,7 +39,8 @@ export default class Message extends React.Component {
           style={{
             border: '1px solid #000',
             borderRadius: '100%',
-            backgroundImage: `url(${user.avatar ? user.avatar.url : 'img/avatar.svg'})`,
+            backgroundImage: `url(${user.avatar ?
+              user.avatar.url : 'img/avatar.svg'})`,
             backgroundSize: 'contain',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

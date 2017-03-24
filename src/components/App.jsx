@@ -1,5 +1,4 @@
 import React from 'react';
-import skygear from 'skygear';
 import skygearChat from 'skygear-chat';
 
 import ManagedConversationList from '../utils/ManagedConversationList.jsx';
@@ -45,9 +44,10 @@ export default class App extends React.Component {
     // subscribe conversation change
     this.conversationList.subscribe(() => {
       const {currentConversation} = this.state;
+      const {conversationList} = this;
       if (currentConversation) {
         this.setState({
-          currentConversation: this.conversationList.get(currentConversation._id)
+          currentConversation: conversationList.get(currentConversation._id)
         });
       } else {
         this.forceUpdate();
@@ -130,7 +130,8 @@ export default class App extends React.Component {
                 .map(c =>
                   <ConversationPreview
                     key={'ConversationPreview-' + c.id + c.updatedAt}
-                    selected={c.id === (currentConversation && currentConversation.id)}
+                    selected={
+                      c.id === (currentConversation && currentConversation.id)}
                     conversation={c}
                     onClick={() => this.setState({currentConversation: c})}/>
                 )
@@ -143,8 +144,8 @@ export default class App extends React.Component {
             conversation={currentConversation}
             showDetails={() => this.setState({currentModal: 'details'})}/>
         }
-        {(currentModal => {
-          switch (currentModal) {
+        {(modal => {
+          switch (modal) {
           case 'createGroup':
             return (
                 <CreateGroupModal
@@ -165,7 +166,8 @@ export default class App extends React.Component {
           case 'details':
             return (
                 <DetailsModal
-                  key={'DetailsModal-' + currentConversation.id + currentConversation.updatedAt}
+                  key={'DetailsModal-'
+                      + currentConversation.id + currentConversation.updatedAt}
                   conversation={currentConversation}
                   updateConversationDelegate={c => conversationList.update(c)}
                   removeConversationDelegate={id => conversationList.remove(id)}

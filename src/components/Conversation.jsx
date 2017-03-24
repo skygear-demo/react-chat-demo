@@ -166,12 +166,12 @@ export default class Conversation extends React.Component {
               <span style={{fontSize: '1rem'}}>
                 {
                   (() => {
-                    const typingUsers = users
+                    const names = users
                       .filter(u => u._id !== currentUserID)
                       .filter(u => typing[u._id])
                       .map(u => u.displayName)
                       .join(', ');
-                    return typingUsers === '' ? '' : `${typingUsers} is typing...`;
+                    return names === '' ? '' : `${names} is typing...`;
                   })()
                 }
               </span>

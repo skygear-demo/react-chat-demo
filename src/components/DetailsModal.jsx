@@ -160,7 +160,9 @@ export default class DetailsModal extends React.Component {
                 type="text"
                 disabled={loading}
                 value={newConversationTitle}
-                onChange={e => this.setState({newConversationTitle: e.target.value})}/>
+                onChange={e => {
+                  this.setState({newConversationTitle: e.target.value});
+                }}/>
               <span
                 style={{
                   cursor: 'pointer',
@@ -215,7 +217,8 @@ export default class DetailsModal extends React.Component {
                   style={{
                     border: '1px solid #000',
                     borderRadius: '100%',
-                    backgroundImage: `url(${u.avatar ? u.avatar.url : 'img/avatar.svg'})`,
+                    backgroundImage: `url(${u.avatar ?
+                      u.avatar.url : 'img/avatar.svg'})`,
                     backgroundSize: 'contain',
                     backgroundPosition: 'center',
                     backgroundRepeat: 'no-repeat',

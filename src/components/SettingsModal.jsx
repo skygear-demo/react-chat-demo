@@ -118,7 +118,8 @@ export default class SettingsModal extends React.Component {
               style={{
                 border: '1px solid #000',
                 borderRadius: '100%',
-                backgroundImage: `url(${loading ? 'img/loading.svg' : avatarURL})`,
+                backgroundImage: `url(${loading ?
+                  'img/loading.svg' : avatarURL})`,
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
@@ -155,7 +156,9 @@ export default class SettingsModal extends React.Component {
                 type="text"
                 disabled={loading}
                 value={newDisplayName}
-                onChange={e => this.setState({newDisplayName: e.target.value})}/>
+                onChange={e => {
+                  this.setState({newDisplayName: e.target.value});
+                }}/>
               <span
                 style={{
                   cursor: 'pointer',

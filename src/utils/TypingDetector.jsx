@@ -24,7 +24,8 @@ export default function TypingDetector(
     conversation instanceof skygear.Record &&
     conversation.recordType === 'conversation'
   )) {
-    throw new Error(`TypingDetector expects Conversation, instead got ${conversation}.`);
+    throw new Error(
+      `TypingDetector expects Conversation, instead got ${conversation}.`);
   }
   let debounceTimer = null;
   function stopTyping() {
