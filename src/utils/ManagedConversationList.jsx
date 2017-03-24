@@ -18,27 +18,32 @@ export class ConversationSorting {
    */
   constructor(attribute, order) {
     const attributeMap = {
-      'title'             : (c) => c.title || "",
-      'last update'       : (c) => c.updatedAt,
-      'create time'       : (c) => c.createdAt,
-      'participant count' : (c) => c.participant_count,
+      title: (c) => c.title || '',
+      'last update': (c) => c.updatedAt,
+      'create time': (c) => c.createdAt,
+      'participant count': (c) => c.participant_count
     };
     const orderMap = {
-      'ascending'         : true,
-      'descending'        : false,
+      ascending: true,
+      descending: false
     };
-    if(!(
+    if (!(
       attributeMap.hasOwnProperty(attribute) &&
       orderMap.hasOwnProperty(order)
     )) {
-      throw new Error('invalid conversation sorting parameters: '+attribute+' '+order);
+      throw new Error('invalid conversation sorting parameters: ' +
+        attribute + ' ' + order);
     }
-    return function(a,b) {
+    return function (a, b) {
       const aValue = attributeMap[attribute](a);
       const bValue = attributeMap[attribute](b);
       const sortAscending = orderMap[order];
-      if(aValue > bValue) return sortAscending?  1 : -1;
-      if(aValue < bValue) return sortAscending? -1 :  1;
+      if (aValue > bValue) {
+        return sortAscending ? 1 : -1;
+      }
+      if (aValue < bValue) {
+        return sortAscending ? -1 : 1;
+      }
       return 0;
     };
   }
@@ -62,7 +67,7 @@ export default class ManagedConversationList {
   constructor({
     initialFetch = true,
     pubsubSync = true,
-    sortBy = new ConversationSorting('last update','descending'),
+    sortBy = new ConversationSorting('last update', 'descending')
   } = {}) {
     // conversation compare fn (for sorting)
     this._compare = sortBy;
@@ -73,10 +78,10 @@ export default class ManagedConversationList {
     // map of subscription ID => event handler
     this._updateHandlers = {};
 
-    if(initialFetch) {
+    if (initialFetch) {
       this.fetch();
     }
-    if(pubsubSync) {
+    if (pubsubSync) {
       skygearChat.subscribe(this._eventHandler.bind(this));
     }
   }
@@ -91,18 +96,18 @@ export default class ManagedConversationList {
    * @private
    */
   _eventHandler(event) {
-    if(event.record_type === 'conversation') {
-      console.log(`[conversation event]`, event);
-      switch(event.event_type) {
-        case 'create':
-          this.add(event.record);
-          break;
-        case 'update':
-          this.update(event.record);
-          break;
-        case 'delete':
-          this.remove(event.record._id);
-          break;
+    if (event.record_type === 'conversation') {
+      console.log('[conversation event]', event);
+      switch (event.event_type) {
+      case 'create':
+        this.add(event.record);
+        break;
+      case 'update':
+        this.update(event.record);
+        break;
+      case 'delete':
+        this.remove(event.record._id);
+        break;
       }
     }
   }
@@ -157,9 +162,9 @@ export default class ManagedConversationList {
   get(indexOrID) {
     const {_conversations, _orderedIDs} = this;
     if (typeof indexOrID === 'number') {
-      return _conversations[_orderedIDs[indexOrID]]
+      return _conversations[_orderedIDs[indexOrID]];
     } else {
-      return _conversations[indexOrID]
+      return _conversations[indexOrID];
     }
   }
   /**
@@ -189,7 +194,7 @@ export default class ManagedConversationList {
    */
   add(conversation) {
     const {_conversations} = this;
-    if(!_conversations.hasOwnProperty(conversation._id)) {
+    if (!_conversations.hasOwnProperty(conversation._id)) {
       _conversations[conversation._id] = conversation;
       this._conversationsUpdated();
     }
@@ -203,7 +208,7 @@ export default class ManagedConversationList {
    */
   update(conversation) {
     const {_conversations} = this;
-    if(
+    if (
       _conversations.hasOwnProperty(conversation._id) &&
       conversation.updatedAt >= _conversations[conversation._id].updatedAt
     ) {
@@ -221,7 +226,7 @@ export default class ManagedConversationList {
    */
   remove(conversationID) {
     const {_conversations} = this;
-    if(_conversations.hasOwnProperty(conversationID)) {
+    if (_conversations.hasOwnProperty(conversationID)) {
       delete _conversations[conversationID];
       this._conversationsUpdated();
     }

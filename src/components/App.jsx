@@ -1,5 +1,4 @@
 import React from 'react';
-import skygear from 'skygear';
 import skygearChat from 'skygear-chat';
 
 import ManagedConversationList from '../utils/ManagedConversationList.jsx';
@@ -10,7 +9,6 @@ import CreateChatModal from './CreateChatModal.jsx';
 import CreateGroupModal from './CreateGroupModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
 import DetailsModal from './DetailsModal.jsx';
-
 
 
 function AddButton({
@@ -24,7 +22,7 @@ function AddButton({
         backgroundColor: '#FFF',
         border: '1px solid #000',
         padding: '1rem 2rem',
-        cursor: 'pointer',
+        cursor: 'pointer'
       }}>
       + {text}
     </button>
@@ -35,19 +33,21 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      unreadCount         : 0,    // user's total unread message count (int)
-      currentModal        : null, // currently displayed modal dialog name (or null)
-      currentConversation : null, // currently selected Conversion Record (or null)
+      unreadCount: 0,    // user's total unread message count (int)
+      currentModal: null, // currently displayed modal dialog name (or null)
+      currentConversation: null // currently selected Conversion Record (or null)
     };
     this.conversationList = new ManagedConversationList();
   }
+
   componentDidMount() {
     // subscribe conversation change
-    this.conversationList.subscribe(_ => {
+    this.conversationList.subscribe(() => {
       const {currentConversation} = this.state;
-      if(currentConversation) {
+      const {conversationList} = this;
+      if (currentConversation) {
         this.setState({
-          currentConversation: this.conversationList.get(currentConversation._id)
+          currentConversation: conversationList.get(currentConversation._id)
         });
       } else {
         this.forceUpdate();
@@ -57,16 +57,16 @@ export default class App extends React.Component {
       this.setState({unreadCount: result.message});
     });
   }
+
   render() {
     const {
       state: {
         unreadCount,
         currentModal,
-        currentConversation,
+        currentConversation
       },
-      conversationList,
+      conversationList
     } = this;
-    const currentUserID = skygear.currentUser && skygear.currentUser.id;
 
     return (
       <div
@@ -75,7 +75,7 @@ export default class App extends React.Component {
           width: '100%',
           height: '100%',
           display: 'flex',
-          overflowX: 'scroll',
+          overflowX: 'scroll'
         }}>
         <div
           style={{
@@ -84,7 +84,7 @@ export default class App extends React.Component {
             minWidth: '400px',
             borderRight: '1px solid #888',
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'column'
           }}>
           <div
             style={{
@@ -94,7 +94,7 @@ export default class App extends React.Component {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              borderBottom: '1px solid #888',
+              borderBottom: '1px solid #888'
             }}>
             <span>{unreadCount > 0 ? `(${unreadCount})` : ''}</span>
             <h1>Chats</h1>
@@ -102,9 +102,9 @@ export default class App extends React.Component {
               src="img/gear.svg"
               style={{
                 cursor: 'pointer',
-                height: '2rem',
+                height: '2rem'
               }}
-              onClick={_ => this.setState({currentModal:'settings'})}/>
+              onClick={() => this.setState({currentModal: 'settings'})}/>
           </div>
           <div
             style={{
@@ -114,65 +114,67 @@ export default class App extends React.Component {
               padding: '1rem 0',
               borderBottom: '1px solid #888',
               height: '4rem',
-              minHeight: '4rem',
+              minHeight: '4rem'
             }}>
             <AddButton
               text="Direct Chat"
-              onClick={_ => this.setState({currentModal:'createChat'})}/>
+              onClick={() => this.setState({currentModal: 'createChat'})}/>
             <AddButton
               text="Group"
-              onClick={_ => this.setState({currentModal:'createGroup'})}/>
+              onClick={() => this.setState({currentModal: 'createGroup'})}/>
           </div>
           <div style={{overflowY: 'scroll'}}>
             {
               conversationList
                 .filter(c => c.participant_count >= 2)
-                .map(c => (
+                .map(c =>
                   <ConversationPreview
                     key={'ConversationPreview-' + c.id + c.updatedAt}
-                    selected={c.id === (currentConversation && currentConversation.id)}
+                    selected={
+                      c.id === (currentConversation && currentConversation.id)}
                     conversation={c}
-                    onClick={_ => this.setState({currentConversation: c})}/>
-                ))
+                    onClick={() => this.setState({currentConversation: c})}/>
+                )
             }
           </div>
         </div>
-        {currentConversation && (
+        {currentConversation &&
           <Conversation
             key={'Conversation-' + currentConversation.id}
             conversation={currentConversation}
-            showDetails={_ => this.setState({currentModal:'details'})}/>
-        )}
-        {(currentModal => {
-          switch(currentModal) {
-            case 'createGroup':
-              return (
+            showDetails={() => this.setState({currentModal: 'details'})}/>
+        }
+        {(modal => {
+          switch (modal) {
+          case 'createGroup':
+            return (
                 <CreateGroupModal
                   addConversationDelegate={c => conversationList.add(c)}
-                  onClose={_ => this.setState({currentModal:null})}/>
-              );
-            case 'createChat':
-              return (
+                  onClose={() => this.setState({currentModal: null})}/>
+            );
+          case 'createChat':
+            return (
                 <CreateChatModal
                   addConversationDelegate={c => conversationList.add(c)}
-                  onClose={_ => this.setState({currentModal:null})}/>
-              );
-            case 'settings':
-              return (
+                  onClose={() => this.setState({currentModal: null})}/>
+            );
+          case 'settings':
+            return (
                 <SettingsModal
-                  onClose={_ => this.setState({currentModal:null})}/>
-              );
-            case 'details':
-              return (
+                  onClose={() => this.setState({currentModal: null})}/>
+            );
+          case 'details':
+            return (
                 <DetailsModal
-                  key={'DetailsModal-' +  currentConversation.id + currentConversation.updatedAt}
+                  key={'DetailsModal-'
+                      + currentConversation.id + currentConversation.updatedAt}
                   conversation={currentConversation}
                   updateConversationDelegate={c => conversationList.update(c)}
                   removeConversationDelegate={id => conversationList.remove(id)}
-                  onClose={_ => this.setState({currentModal:null})}/>
-              );
-            default:
-              return null;
+                  onClose={() => this.setState({currentModal: null})}/>
+            );
+          default:
+            return null;
           }
         })(currentModal)}
       </div>

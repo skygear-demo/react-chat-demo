@@ -9,20 +9,22 @@ export default class CreateChatModal extends React.Component {
     super(props);
     this.state = {
       loading: false,
-      errorMessage: '',
+      errorMessage: ''
     };
   }
   discoverUserAndCreateChat(username) {
-    if(username === skygear.currentUser.username) {
-      this.setState({errorMessage: 'Error: cannot create conversation with yourself'});
+    if (username === skygear.currentUser.username) {
+      this.setState({
+        errorMessage: 'Error: cannot create conversation with yourself'
+      });
       return;
     }
     this.setState({loading: true});
     skygear.discoverUserByUsernames(
       username
     ).then(users => {
-      if(users.length <= 0) {
-        return Promise.reject({message: `user "${username}" not found`})
+      if (users.length <= 0) {
+        return Promise.reject({message: `user "${username}" not found`});
       }
       return skygearChat.createDirectConversation(users[0], null);
     }).then(conversation => {
@@ -32,19 +34,19 @@ export default class CreateChatModal extends React.Component {
     }).catch(err => {
       this.setState({
         loading: false,
-        errorMessage: `Error: ${err.message}`,
+        errorMessage: `Error: ${err.message}`
       });
     });
   }
   render() {
     const {
       props: {
-        onClose,
+        onClose
       },
       state: {
         loading,
-        errorMessage,
-      },
+        errorMessage
+      }
     } = this;
     return (
       <Modal
@@ -61,7 +63,7 @@ export default class CreateChatModal extends React.Component {
             display: 'flex',
             flexDirection: 'column',
             width: '21rem',
-            padding: '3rem 3rem 1rem',
+            padding: '3rem 3rem 1rem'
           }}>
           <label>Username</label>
           <input
@@ -73,7 +75,7 @@ export default class CreateChatModal extends React.Component {
               style={{
                 backgroundColor: '#FFF',
                 border: '1px solid #000',
-                padding: '0.5rem 1rem',
+                padding: '0.5rem 1rem'
               }}
               disabled={loading}
               type="submit"

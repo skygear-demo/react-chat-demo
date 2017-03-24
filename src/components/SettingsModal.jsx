@@ -1,6 +1,5 @@
 import React from 'react';
 import skygear from 'skygear';
-import skygearChat from 'skygear-chat';
 
 import Modal from './Modal.jsx';
 
@@ -8,11 +7,11 @@ export default class SettingsModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      displayName:    '',     // user display name
+      displayName: '',     // user display name
       newDisplayName: '',     // new user display name (text input value)
-      avatarURL:      '',     // user avatar URL
-      editingName:    false,  // display name editing state
-      loading:        true,   // modal loading state
+      avatarURL: '',     // user avatar URL
+      editingName: false,  // display name editing state
+      loading: true   // modal loading state
     };
   }
   componentDidMount() {
@@ -22,42 +21,42 @@ export default class SettingsModal extends React.Component {
       .equalTo('_id', skygear.currentUser.id)
     ).then(([user]) => {
       this.setState({
-        loading:      false,
-        displayName:  user.displayName,
-        avatarURL:    (user.avatar)? user.avatar.url : 'img/avatar.svg',
+        loading: false,
+        displayName: user.displayName,
+        avatarURL: user.avatar ? user.avatar.url : 'img/avatar.svg'
       });
     });
   }
   changeAvatar(imageFile) {
-    this.setState({loading:true});
+    this.setState({loading: true});
     skygear.publicDB.save(
       new skygear.UserRecord({
         _id: 'user/' + skygear.currentUser.id,
         avatar: new skygear.Asset({
           name: imageFile.name,
-          file: imageFile,
-        }),
+          file: imageFile
+        })
       })
     ).then(({avatar}) => {
       this.setState({
         loading: false,
-        avatarURL: avatar.url,
+        avatarURL: avatar.url
       });
     });
   }
   changeName() {
     const {newDisplayName} = this.state;
-    this.setState({loading:true});
+    this.setState({loading: true});
     skygear.publicDB.save(
       new skygear.UserRecord({
         _id: 'user/' + skygear.currentUser.id,
-        displayName: newDisplayName,
+        displayName: newDisplayName
       })
-    ).then(_ => {
+    ).then(() => {
       this.setState({
         loading: false,
         displayName: newDisplayName,
-        editingName: false,
+        editingName: false
       });
     });
   }
@@ -65,28 +64,28 @@ export default class SettingsModal extends React.Component {
     const {displayName} = this.state;
     this.setState({
       newDisplayName: displayName,
-      editingName: true,
+      editingName: true
     });
   }
   logout() {
-    this.setState({loading:true});
-    skygear.logout().then(_ => {
-      this.setState({loading:false});
+    this.setState({loading: true});
+    skygear.logout().then(() => {
+      this.setState({loading: false});
       window.location.href = 'login.html';
     });
   }
   render() {
     const {
       props: {
-        onClose,
+        onClose
       },
       state: {
         avatarURL,
         displayName,
         newDisplayName,
         editingName,
-        loading,
-      },
+        loading
+      }
     } = this;
 
     const currentUsername = skygear.currentUser && skygear.currentUser.username;
@@ -101,13 +100,13 @@ export default class SettingsModal extends React.Component {
             flexDirection: 'column',
             alignItems: 'center',
             margin: '2rem 0',
-            width: '18rem',
+            width: '18rem'
           }}>
           <label
             style={{
               display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              alignItems: 'center'
             }}>
             <input
               type="file"
@@ -119,19 +118,20 @@ export default class SettingsModal extends React.Component {
               style={{
                 border: '1px solid #000',
                 borderRadius: '100%',
-                backgroundImage: `url(${loading?'img/loading.svg':avatarURL})`,
+                backgroundImage: `url(${loading ?
+                  'img/loading.svg' : avatarURL})`,
                 backgroundSize: 'contain',
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
                 cursor: 'pointer',
                 width: '5rem',
-                height: '5rem',
+                height: '5rem'
               }}>
             </div>
             <span
               style={{
                 cursor: 'pointer',
-                textDecoration: 'underline',
+                textDecoration: 'underline'
               }}>
               edit
             </span>
@@ -140,46 +140,48 @@ export default class SettingsModal extends React.Component {
             style={{
               display: 'flex',
               alignItems: 'center',
-              marginTop: '1rem',
+              marginTop: '1rem'
             }}>
             <strong>Username:</strong>
             <span style={{marginLeft: '0.5rem'}}>{currentUsername}</span>
           </div>
-          {(editingName)? (
+          {editingName ?
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '1rem',
+                marginTop: '1rem'
               }}>
               <input
                 type="text"
                 disabled={loading}
                 value={newDisplayName}
-                onChange={e => this.setState({newDisplayName: e.target.value})}/>
+                onChange={e => {
+                  this.setState({newDisplayName: e.target.value});
+                }}/>
               <span
                 style={{
                   cursor: 'pointer',
-                  fontSize: '1.3rem',
+                  fontSize: '1.3rem'
                 }}
-                onClick={_ => this.setState({editingName: false})}>
+                onClick={() => this.setState({editingName: false})}>
                 ✕
               </span>
               <span
                 style={{
                   cursor: 'pointer',
-                  fontSize: '1.5rem',
+                  fontSize: '1.5rem'
                 }}
-                onClick={_ => this.changeName()}>
+                onClick={() => this.changeName()}>
                 ✓
               </span>
             </div>
-          ) : (
+           :
             <div
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '1rem',
+                marginTop: '1rem'
               }}>
               <strong>Name:</strong>
               <span style={{marginLeft: '0.5rem'}}>
@@ -190,24 +192,24 @@ export default class SettingsModal extends React.Component {
                 style={{
                   marginLeft: '1rem',
                   height: '1rem',
-                  cursor: 'pointer',
+                  cursor: 'pointer'
                 }}
-                onClick={_ => this.editName()}/>
+                onClick={() => this.editName()}/>
             </div>
-          )}
+          }
         </div>
         <div
           style={{
             width: '100%',
-            textAlign: 'center',
+            textAlign: 'center'
           }}>
           <button
             style={{
               background: '#FFF',
               border: '1px solid #000',
-              padding: '1rem 2rem',
+              padding: '1rem 2rem'
             }}
-            onClick={_ => this.logout()}>
+            onClick={() => this.logout()}>
             Logout
           </button>
         </div>

@@ -10,20 +10,22 @@ function InputField({
   disabled, // input disabled (boolean)
   hidden    // input hidden (boolean)
 }) {
-  if(hidden) return null;
+  if (hidden) {
+    return null;
+  }
   return (
     <div
       style={{
         margin: '0.5rem 0',
         display: 'flex',
-        flexDirection: 'column',
+        flexDirection: 'column'
       }}>
       <label>{label}</label>
       <input
         style={{
           border: '1px solid #000',
           padding: '0.5rem',
-          fontSize: '1rem',
+          fontSize: '1rem'
         }}
         required={required}
         disabled={disabled}
@@ -45,7 +47,7 @@ function ErrorModal({
           width: '16rem',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
+          alignItems: 'center'
         }}>
         <p>{message}</p>
         <button onClick={onClose}>OK</button>
@@ -59,7 +61,7 @@ export default class Authenticate extends React.Component {
     super(props);
     this.state = {
       loading: false,     // loading state (boolean)
-      errorMessage: null, // error message (shown in error modal if non-null)
+      errorMessage: null // error message (shown in error modal if non-null)
     };
   }
   login(
@@ -70,12 +72,12 @@ export default class Authenticate extends React.Component {
     skygear.loginWithUsername(
       username,
       password
-    ).then(_ => {
+    ).then(() => {
       window.location.href = 'app.html';
     }).catch(result => {
       this.setState({
         loading: false,
-        errorMessage: result.error.message,
+        errorMessage: result.error.message
       });
     });
   }
@@ -84,7 +86,7 @@ export default class Authenticate extends React.Component {
     password,
     passwordConfirm
   ) {
-    if(password !== passwordConfirm) {
+    if (password !== passwordConfirm) {
       this.setState({errorMessage: 'Passwords do not match.'});
       return;
     }
@@ -96,10 +98,10 @@ export default class Authenticate extends React.Component {
       return skygear.publicDB.save(
         new skygear.UserRecord({
           _id: `user/${user.id}`,
-          displayName: username,
+          displayName: username
         })
       );
-    }).then(_ => {
+    }).then(() => {
       window.location.href = 'app.html';
     }).catch(result => {
       this.setState({
@@ -111,12 +113,12 @@ export default class Authenticate extends React.Component {
   render() {
     const {
       props: {
-        login: loginPage,
+        login: loginPage
       },
       state: {
         loading,
-        errorMessage,
-      },
+        errorMessage
+      }
     } = this;
 
     return (
@@ -132,7 +134,7 @@ export default class Authenticate extends React.Component {
         <form
           onSubmit={e => {
             e.preventDefault();
-            if(loginPage) {
+            if (loginPage) {
               this.login(
                 e.target[0].value,
                 e.target[1].value
@@ -151,7 +153,7 @@ export default class Authenticate extends React.Component {
             width: '300px'
           }}>
           <h1 style={{textAlign: 'center'}}>
-            {loginPage? 'Welcome!' : 'Sign Up'}
+            {loginPage ? 'Welcome!' : 'Sign Up'}
           </h1>
           <InputField
             required
@@ -174,24 +176,24 @@ export default class Authenticate extends React.Component {
               margin: '1rem 0',
               backgroundColor: '#FFF',
               border: '1px solid #000',
-              padding: '1rem 2rem',
+              padding: '1rem 2rem'
             }}
             type="submit"
             disabled={loading}
-            value={loginPage? 'Login' : 'Sign Up'}/>
+            value={loginPage ? 'Login' : 'Sign Up'}/>
           <a
             style={{
-              textAlign: 'center',
+              textAlign: 'center'
             }}
-            href={loginPage? 'signup.html' : 'login.html'}>
-            {loginPage? 'Sign Up' : 'Login'}
+            href={loginPage ? 'signup.html' : 'login.html'}>
+            {loginPage ? 'Sign Up' : 'Login'}
           </a>
         </form>
-        {errorMessage && (
+        {errorMessage &&
           <ErrorModal
             message={errorMessage}
-            onClose={_ => this.setState({errorMessage:null})}/>
-        )}
+            onClose={() => this.setState({errorMessage: null})}/>
+        }
       </div>
     );
   }
