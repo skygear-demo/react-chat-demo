@@ -14,23 +14,15 @@ function InputField({
     return null;
   }
   return (
-    <div
-      style={{
-        margin: '0.5rem 0',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+    <p
+      style={Styles.formElement}>
       <label>{label}</label>
       <input
-        style={{
-          border: '1px solid #000',
-          padding: '0.5rem',
-          fontSize: '1rem'
-        }}
+        style={Styles.formInput}
         required={required}
         disabled={disabled}
         type={type}/>
-    </div>
+    </p>
   );
 }
 
@@ -43,12 +35,7 @@ function ErrorModal({
       header="Error"
       onClose={onClose}>
       <div
-        style={{
-          width: '16rem',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center'
-        }}>
+        style={Styles.modelContainer}>
         <p>{message}</p>
         <button onClick={onClose}>OK</button>
       </div>
@@ -123,14 +110,7 @@ export default class Authenticate extends React.Component {
 
     return (
       <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'fixed',
-          height: '100%',
-          width: '100%'
-        }}>
+        style={Styles.container}>
         <form
           onSubmit={e => {
             e.preventDefault();
@@ -147,11 +127,7 @@ export default class Authenticate extends React.Component {
               );
             }
           }}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            width: '300px'
-          }}>
+          style={Styles.form}>
           <h1 style={{textAlign: 'center'}}>
             {loginPage ? 'Welcome!' : 'Sign Up'}
           </h1>
@@ -172,12 +148,7 @@ export default class Authenticate extends React.Component {
             hidden={loginPage}
             disabled={loading}/>
           <input
-            style={{
-              margin: '1rem 0',
-              backgroundColor: '#FFF',
-              border: '1px solid #000',
-              padding: '1rem 2rem'
-            }}
+            style={Styles.formButton}
             type="submit"
             disabled={loading}
             value={loginPage ? 'Login' : 'Sign Up'}/>
@@ -196,5 +167,49 @@ export default class Authenticate extends React.Component {
         }
       </div>
     );
+  }
+}
+
+
+const Styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'fixed',
+    height: '100%',
+    width: '100%'
+  },
+
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '300px'
+  },
+
+  formElement: {
+    margin: '0.5rem 0',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+
+  formInput: {
+    border: '1px solid #000',
+    padding: '0.5rem',
+    fontSize: '1rem'
+  },
+
+  formButton: {
+    margin: '1rem 0',
+    backgroundColor: '#FFF',
+    border: '1px solid #000',
+    padding: '1rem 2rem'
+  },
+
+  modelContainer: {
+    width: '16rem',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   }
 }

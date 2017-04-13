@@ -95,18 +95,9 @@ export default class SettingsModal extends React.Component {
         header="Settings"
         onClose={onClose}>
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            margin: '2rem 0',
-            width: '18rem'
-          }}>
+          style={Styles.container}>
           <label
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center'
             }}>
             <input
               type="file"
@@ -115,43 +106,24 @@ export default class SettingsModal extends React.Component {
               onChange={(e) => this.changeAvatar(e.target.files[0])}
               style={{display: 'none'}}/>
             <div
-              style={{
-                border: '1px solid #000',
-                borderRadius: '100%',
+              style={Object.assign({}, Styles.avatarImg, {
                 backgroundImage: `url(${loading ?
                   'img/loading.svg' : avatarURL})`,
-                backgroundSize: 'contain',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                cursor: 'pointer',
-                width: '5rem',
-                height: '5rem'
-              }}>
+              })}>
             </div>
             <span
-              style={{
-                cursor: 'pointer',
-                textDecoration: 'underline'
-              }}>
+              style={Styles.avatarEdit}>
               edit
             </span>
           </label>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginTop: '1rem'
-            }}>
-            <strong>Username:</strong>
-            <span style={{marginLeft: '0.5rem'}}>{currentUsername}</span>
+            style={Styles.centerAlign}>
+            <strong>Username: </strong>
+            <span>{currentUsername}</span>
           </div>
           {editingName ?
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '1rem'
-              }}>
+              style={Styles.centerAlign}>
               <input
                 type="text"
                 disabled={loading}
@@ -160,60 +132,104 @@ export default class SettingsModal extends React.Component {
                   this.setState({newDisplayName: e.target.value});
                 }}/>
               <span
-                style={{
-                  cursor: 'pointer',
-                  fontSize: '1.3rem'
-                }}
+                style={Styles.editCancel}
                 onClick={() => this.setState({editingName: false})}>
                 ✕
               </span>
               <span
-                style={{
-                  cursor: 'pointer',
-                  fontSize: '1.5rem'
-                }}
+                style={Styles.editConfirm}
                 onClick={() => this.changeName()}>
                 ✓
               </span>
             </div>
            :
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '1rem'
-              }}>
-              <strong>Name:</strong>
-              <span style={{marginLeft: '0.5rem'}}>
+              style={Styles.centerAlign}>
+              <strong>Name: </strong>
+              <span>
                 {displayName}
               </span>
               <img
                 src="img/edit.svg"
-                style={{
-                  marginLeft: '1rem',
-                  height: '1rem',
-                  cursor: 'pointer'
-                }}
+                style={Styles.editStart}
                 onClick={() => this.editName()}/>
             </div>
           }
         </div>
         <div
-          style={{
-            width: '100%',
-            textAlign: 'center'
-          }}>
+          style={Styles.logoutContainer}>
           <button
-            style={{
-              background: '#FFF',
-              border: '1px solid #000',
-              padding: '1rem 2rem'
-            }}
+            style={Styles.logoutButton}
             onClick={() => this.logout()}>
             Logout
           </button>
         </div>
       </Modal>
     );
+  }
+}
+
+const Styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    margin: '2rem 0',
+    width: '18rem'
+  },
+
+  avatarLabel: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+
+  avatarImg: {
+    border: '1px solid #000',
+    borderRadius: '100%',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    cursor: 'pointer',
+    width: '5rem',
+    height: '5rem'
+  },
+
+  avatarEdit: {
+    cursor: 'pointer',
+    textDecoration: 'underline'
+  },
+
+  centerAlign: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: '1rem'
+  },
+
+  editStart: {
+    marginLeft: '1rem',
+    height: '1rem',
+    cursor: 'pointer'
+  },
+
+  editCancel: {
+    cursor: 'pointer',
+    fontSize: '1.3rem'
+  },
+
+  editConfirm: {
+    cursor: 'pointer',
+    fontSize: '1.5rem'
+  },
+
+  logoutContainer: {
+    width: '100%',
+    textAlign: 'center'
+  },
+
+  logoutButton: {
+    background: '#FFF',
+    border: '1px solid #000',
+    padding: '1rem 2rem'
   }
 }

@@ -41,10 +41,9 @@ export default class Conversation extends React.Component {
   }
   componentWillUnmount() {
     this.messageList.destroy();
-    // FIXME: unsubscribe typing indicator when SDK is fixed.
-    //skygearChat.unsubscribeTypingIndicator(
-    //  this.props.conversation
-    //);
+    skygearChat.unsubscribeTypingIndicator(
+      this.props.conversation
+    );
   }
   scrollToBottom() {
     // wait for changes to propergate to real DOM
@@ -133,39 +132,20 @@ export default class Conversation extends React.Component {
 
     return (
       <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          width: '75%',
-          height: '100%'
-        }}>
+        style={Styles.container}>
         <div
-          style={{
-            position: 'relative',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            height: '6rem',
-            borderBottom: '1px solid #000'
-          }}>
+          style={Styles.topPanel}>
           <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '100%'
-            }}>
+            style={Styles.panelContent}>
             <span></span>
             <div
-              style={{
-                textAlign: 'center',
-                fontSize: '1.5rem'
-              }}>
+              style={Styles.title}>
               <strong>{title}</strong> {` (${participant_count} people)`} <br/>
               <span style={{fontSize: '1rem'}}>
                 {
                   (() => {
+                    // FIXME: if the user have no displayname, it should
+                    // appear someone is typing
                     const names = users
                       .filter(u => u._id !== currentUserID)
                       .filter(u => typing[u._id])
@@ -177,23 +157,14 @@ export default class Conversation extends React.Component {
               </span>
             </div>
             <img
-              style={{
-                height: '2rem',
-                cursor: 'pointer',
-                marginRight: '2rem'
-              }}
+              style={Styles.infoImg}
               onClick={showDetails}
               src="img/info.svg"/>
           </div>
         </div>
         <div
           id="message-view"
-          style={{
-            height: '100%',
-            width: '100%',
-            overflowX: 'hidden',
-            overflowY: 'scroll'
-          }}>
+          style={Styles.messageList}>
           {
             messageList.map((m) =>
               <Message
@@ -203,41 +174,20 @@ export default class Conversation extends React.Component {
           }
         </div>
         <div
-          style={{
-            width: '100%',
-            height: '5rem',
-            display: 'flex',
-            alignItems: 'center',
-            borderTop: '1px solid #000'
-          }}>
+          style={Styles.messageBox}>
           <form
-            style={{
-              width: '100%',
-              margin: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
+            style={Styles.messageForm}
             onSubmit={e => {
               e.preventDefault();
               this.sendMessage(e.target[0].value);
               e.target[0].value = '';
             }}>
             <input
-              style={{
-                padding: '0.25rem',
-                fontSize: '1rem',
-                width: '100%'
-              }}
+              style={Styles.messageInput}
               onChange={() => this.detectTyping()}
               type="text"/>
             <input
-              style={{
-                backgroundColor: '#FFF',
-                border: '1px solid #000',
-                padding: '0.5rem 1rem',
-                marginLeft: '1rem'
-              }}
+              style={Styles.messageSubmit}
               value="Send"
               type="submit"/>
           </form>
@@ -245,4 +195,79 @@ export default class Conversation extends React.Component {
       </div>
     );
   }
+}
+
+
+const Styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    width: '75%',
+    height: '100%'
+  },
+
+  topPanel: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    height: '6rem',
+    borderBottom: '1px solid #000'
+  },
+
+  title: {
+    textAlign: 'center',
+    fontSize: '1.5rem'
+  },
+
+  panelContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%'
+  },
+
+  infoImg: {
+    height: '2rem',
+    cursor: 'pointer',
+    marginRight: '2rem'
+  },
+
+  messageList: {
+    height: '100%',
+    width: '100%',
+    overflowX: 'hidden',
+    overflowY: 'scroll'
+  },
+
+  messageBox: {
+    width: '100%',
+    height: '5rem',
+    display: 'flex',
+    alignItems: 'center',
+    borderTop: '1px solid #000'
+  },
+
+  messageForm: {
+    width: '100%',
+    margin: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+
+  messageInput: {
+    padding: '0.25rem',
+    fontSize: '1rem',
+    width: '100%'
+  },
+
+  messageSubmit: {
+    backgroundColor: '#FFF',
+    border: '1px solid #000',
+    padding: '0.5rem 1rem',
+    marginLeft: '1rem'
+  }
+
 }

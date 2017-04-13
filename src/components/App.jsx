@@ -18,12 +18,7 @@ function AddButton({
   return (
     <button
       onClick={onClick}
-      style={{
-        backgroundColor: '#FFF',
-        border: '1px solid #000',
-        padding: '1rem 2rem',
-        cursor: 'pointer'
-      }}>
+      style={Styles.addButton}>
       + {text}
     </button>
   );
@@ -70,52 +65,20 @@ export default class App extends React.Component {
 
     return (
       <div
-        style={{
-          position: 'fixed',
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          overflowX: 'scroll'
-        }}>
+        style={Styles.root}>
         <div
-          style={{
-            height: '100%',
-            width: '25%',
-            minWidth: '400px',
-            borderRight: '1px solid #888',
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
+          style={Styles.leftPanel}>
           <div
-            style={{
-              height: '2rem',
-              minHeight: '2rem',
-              padding: '1rem 2rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              borderBottom: '1px solid #888'
-            }}>
+            style={Styles.settingPanel}>
             <span>{unreadCount > 0 ? `(${unreadCount})` : ''}</span>
             <h1>Chats</h1>
             <img
               src="img/gear.svg"
-              style={{
-                cursor: 'pointer',
-                height: '2rem'
-              }}
+              style={Styles.settingImg}
               onClick={() => this.setState({currentModal: 'settings'})}/>
           </div>
           <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              padding: '1rem 0',
-              borderBottom: '1px solid #888',
-              height: '4rem',
-              minHeight: '4rem'
-            }}>
+            style={Styles.creationPanel}>
             <AddButton
               text="Direct Chat"
               onClick={() => this.setState({currentModal: 'createChat'})}/>
@@ -123,7 +86,7 @@ export default class App extends React.Component {
               text="Group"
               onClick={() => this.setState({currentModal: 'createGroup'})}/>
           </div>
-          <div style={{overflowY: 'scroll'}}>
+          <div style={Styles.conversationContainer}>
             {
               conversationList
                 .filter(c => c.participant_count >= 2)
@@ -180,4 +143,61 @@ export default class App extends React.Component {
       </div>
     );
   }
+}
+
+
+const Styles = {
+  root: {
+    position: 'fixed',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    overflowX: 'scroll'
+  },
+
+  leftPanel: {
+    height: '100%',
+    width: '25%',
+    minWidth: '400px',
+    borderRight: '1px solid #888',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+
+  settingPanel: {
+    height: '2rem',
+    minHeight: '2rem',
+    padding: '1rem 2rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottom: '1px solid #888'
+  },
+
+  settingImg: {
+    cursor: 'pointer',
+    height: '2rem'
+  },
+
+  creationPanel: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: '1rem 0',
+    borderBottom: '1px solid #888',
+    height: '4rem',
+    minHeight: '4rem'
+  },
+
+  conversationContainer: {
+    overflowY: 'scroll'
+  },
+
+  addButton: {
+    backgroundColor: '#FFF',
+    border: '1px solid #000',
+    padding: '1rem 2rem',
+    cursor: 'pointer'
+  },
+
 }

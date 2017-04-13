@@ -58,40 +58,20 @@ export default class ConversationPreview extends React.Component {
     return (
       <div
         onClick={onClick}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          padding: '1rem 2rem',
-          borderBottom: '1px solid #DDD',
+        style={Object.assign({}, Styles.container, {
           backgroundColor: selected ? '#EEE' : '#FFF',
-          cursor: 'pointer'
-        }}>
+        })}>
         <div
-          style={{
-            border: '1px solid #000',
-            borderRadius: '100%',
+          style={Object.assign({}, Styles.conversationImg, {
             backgroundImage: `url(${imageURL})`,
-            backgroundSize: 'contain',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            width: '3rem',
-            height: '3rem'
-          }}>
+          })}>
         </div>
         <div
-          style={{
-            padding: '0 1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            width: '70%'
-          }}>
-          <h2 style={{margin: '0'}}>{title}</h2>
+          style={Styles.conversationTitle}>
+          <h2 style={Styles.title}>{title}</h2>
           {lastMessage &&
             <span
-              style={{
-                marginTop: '0.5rem',
-                color: '#AAA'
-              }}>
+              style={Styles.lastMessage}>
               { lastMessage.length > 23 ?
                   lastMessage.substring(0, 20) + '...' : lastMessage }
             </span>
@@ -105,3 +85,38 @@ export default class ConversationPreview extends React.Component {
   }
 }
 
+const Styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '1rem 2rem',
+    borderBottom: '1px solid #DDD',
+    cursor: 'pointer'
+  },
+
+  conversationImg: {
+    border: '1px solid #000',
+    borderRadius: '100%',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    width: '3rem',
+    height: '3rem'
+  },
+
+  conversationTitle: {
+    padding: '0 1rem',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '70%'
+  },
+
+  title: {
+    margin: '0'
+  },
+
+  lastMessage: {
+    marginTop: '0.5rem',
+    color: '#AAA'
+  }
+}
