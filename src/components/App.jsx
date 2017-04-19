@@ -89,15 +89,14 @@ export default class App extends React.Component {
           <div style={Styles.conversationContainer}>
             {
               conversationList
-                .filter(c => c.participant_count >= 2)
-                .map(c =>
-                  <ConversationPreview
+                .map((c) => {
+                  return <ConversationPreview
                     key={'ConversationPreview-' + c.id + c.updatedAt}
                     selected={
                       c.id === (currentConversation && currentConversation.id)}
                     conversation={c}
                     onClick={() => this.setState({currentConversation: c})}/>
-                )
+                })
             }
           </div>
         </div>

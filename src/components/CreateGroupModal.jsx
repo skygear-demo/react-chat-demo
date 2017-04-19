@@ -15,12 +15,6 @@ export default class CreateGroupModal extends React.Component {
     };
   }
   discoverUser(username) {
-    if (username === skygear.currentUser.username) {
-      this.setState({
-        errorMessage: 'Error: cannot create conversation with yourself'
-      });
-      return;
-    }
     this.setState({loading: true});
     skygear.discoverUserByUsernames(
       username

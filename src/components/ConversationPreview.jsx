@@ -20,18 +20,24 @@ export default class ConversationPreview extends React.Component {
     // fetch users
     Promise.all(
       participant_ids
-      .filter(id => id !== skygear.currentUser.id)
       .map(userID => UserLoader.get(userID))
     ).then(users => {
+      if (users.length > 1) {
+        users = users.filter(u => u._id !== skygear.currentUser.id)
+      }
       let names = users
         .map(u => u.displayName)
         .join(', ');
       if (names.length > 30) {
         names = names.substring(0, 27) + '...';
       }
+      let avatar = 'img/avatar.svg';
+      if (users[0]) {
+         avatar = users[0].avatar ? users[0].avatar.url : 'img/avatar.svg';
+      }
       this.setState({
         title: title || names,
-        imageURL: users[0].avatar ? users[0].avatar.url : 'img/avatar.svg'
+        imageURL: avatar
       });
     });
   }

@@ -13,12 +13,6 @@ export default class CreateChatModal extends React.Component {
     };
   }
   discoverUserAndCreateChat(username) {
-    if (username === skygear.currentUser.username) {
-      this.setState({
-        errorMessage: 'Error: cannot create conversation with yourself'
-      });
-      return;
-    }
     this.setState({loading: true});
     skygear.discoverUserByUsernames(
       username
