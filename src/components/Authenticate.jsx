@@ -43,12 +43,12 @@ function ErrorModal({
   );
 }
 
-export default class Authenticate extends React.Component {
+export class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loading: false,     // loading state (boolean)
-      errorMessage: null // error message (shown in error modal if non-null)
+      errorMessage: null  // error message (shown in error modal if non-null)
     };
   }
   login(
@@ -68,6 +68,71 @@ export default class Authenticate extends React.Component {
       });
     });
   }
+
+  render() {
+    const {
+      loading,
+      errorMessage
+    } = this.state;
+
+    return (
+      <div
+        style={Styles.container}>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            this.login(
+              e.target[0].value,
+              e.target[1].value
+            );
+          }}
+          style={Styles.form}>
+          <h1 style={{textAlign: 'center'}}>
+            Welcome!
+          </h1>
+          <InputField
+            required
+            type="text"
+            label="Username"
+            disabled={loading}/>
+          <InputField
+            required
+            type="password"
+            label="Password"
+            disabled={loading}/>
+          <input
+            style={Styles.formButton}
+            type="submit"
+            disabled={loading}
+            value='Login'/>
+          <a
+            style={{
+              textAlign: 'center'
+            }}
+            href='signup.html'>
+            Sign Up
+          </a>
+        </form>
+        {errorMessage &&
+          <ErrorModal
+            message={errorMessage}
+            onClose={() => this.setState({errorMessage: null})}/>
+        }
+      </div>
+    );
+  }
+}
+
+
+export class Signup extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,     // loading state (boolean)
+      errorMessage: null // error message (shown in error modal if non-null)
+    };
+  }
+
   signup(
     username,
     password,
@@ -97,16 +162,12 @@ export default class Authenticate extends React.Component {
       });
     });
   }
+
   render() {
     const {
-      props: {
-        login: loginPage
-      },
-      state: {
-        loading,
-        errorMessage
-      }
-    } = this;
+      loading,
+      errorMessage
+    } = this.state;
 
     return (
       <div
@@ -114,22 +175,15 @@ export default class Authenticate extends React.Component {
         <form
           onSubmit={e => {
             e.preventDefault();
-            if (loginPage) {
-              this.login(
-                e.target[0].value,
-                e.target[1].value
-              );
-            } else {
-              this.signup(
-                e.target[0].value,
-                e.target[1].value,
-                e.target[2].value
-              );
-            }
+            this.signup(
+              e.target[0].value,
+              e.target[1].value,
+              e.target[2].value
+            );
           }}
           style={Styles.form}>
           <h1 style={{textAlign: 'center'}}>
-            {loginPage ? 'Welcome!' : 'Sign Up'}
+            Signup
           </h1>
           <InputField
             required
@@ -145,19 +199,18 @@ export default class Authenticate extends React.Component {
             required
             type="password"
             label="Confirm Password"
-            hidden={loginPage}
             disabled={loading}/>
           <input
             style={Styles.formButton}
             type="submit"
             disabled={loading}
-            value={loginPage ? 'Login' : 'Sign Up'}/>
+            value='Sign Up'/>
           <a
             style={{
               textAlign: 'center'
             }}
-            href={loginPage ? 'signup.html' : 'login.html'}>
-            {loginPage ? 'Sign Up' : 'Login'}
+            href='login.html'>
+            Login
           </a>
         </form>
         {errorMessage &&
