@@ -145,6 +145,25 @@ export default class ManagedUserConversationList {
       });
   }
   /**
+   * Update user conversations from the server by providing a conversation
+   * @param {Conversation} conversation
+   * @return {ManagedUserConversationList}
+   */
+  updateOne(conversation) {
+    const {
+      _userConversations,
+      _ucByCId
+    } = this;
+    skygearChat
+      .getUserConversation(conversation)
+      .then((uc) => {
+        _userConversations[uc._id] = uc;
+        _ucByCId[conversation._id] = uc;
+        this._userConversationsUpdated();
+      });
+    return this;
+  }
+  /**
    * List length (like the array length property)
    * @type {number}
    */
@@ -192,20 +211,12 @@ export default class ManagedUserConversationList {
    */
   addConversation(conversation) {
     const {
-      _userConversations,
       _ucByCId
     } = this;
     if (_ucByCId.hasOwnProperty(conversation._id)) {
       return this;
     }
-    skygearChat
-      .getUserConversation(conversation)
-      .then((uc) => {
-        _userConversations[uc._id] = uc;
-        _ucByCId[conversation._id] = uc;
-        this._userConversationsUpdated();
-      });
-    return this;
+    return this.updateOne(conversation);
   }
   /**
    * Update a conversation, no-op if the conversation updatedAt date is older than existing.
@@ -221,8 +232,7 @@ export default class ManagedUserConversationList {
       if (conversation.updatedAt <= c.updatedAt) {
         return this
       }
-      uc.$transient.conversation = conversation;
-      this._userConversationsUpdated();
+      return this.updateOne(conversation);
     } else {
       this.addConversation(conversation);
     }

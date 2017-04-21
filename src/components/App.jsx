@@ -39,7 +39,12 @@ export default class App extends React.Component {
     // subscribe conversation change
     this.userConversationList.subscribe(() => {
       this.forceUpdate();
+      this.updateUnreadCount();
     });
+    this.updateUnreadCount();
+  }
+
+  updateUnreadCount() {
     skygearChat.getUnreadCount().then(result => {
       this.setState({unreadCount: result.message});
     });
