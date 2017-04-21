@@ -1,7 +1,7 @@
 import React from 'react';
 import skygearChat from 'skygear-chat';
 
-import ManagedConversationList from '../utils/ManagedConversationList.jsx';
+import ManagedUserConversationList from '../utils/ManagedConversationList.jsx';
 
 import Conversation from './Conversation.jsx';
 import ConversationPreview from './ConversationPreview.jsx';
@@ -30,23 +30,15 @@ export default class App extends React.Component {
     this.state = {
       unreadCount: 0,    // user's total unread message count (int)
       currentModal: null, // currently displayed modal dialog name (or null)
-      currentConversation: null // currently selected Conversion Record (or null)
+      activeID: null // currently selected UserConversion ID (or null)
     };
-    this.conversationList = new ManagedConversationList();
+    this.userConversationList = new ManagedUserConversationList();
   }
 
   componentDidMount() {
     // subscribe conversation change
-    this.conversationList.subscribe(() => {
-      const {currentConversation} = this.state;
-      const {conversationList} = this;
-      if (currentConversation) {
-        this.setState({
-          currentConversation: conversationList.get(currentConversation._id)
-        });
-      } else {
-        this.forceUpdate();
-      }
+    this.userConversationList.subscribe(() => {
+      this.forceUpdate();
     });
     skygearChat.getUnreadCount().then(result => {
       this.setState({unreadCount: result.message});
@@ -58,10 +50,11 @@ export default class App extends React.Component {
       state: {
         unreadCount,
         currentModal,
-        currentConversation
+        activeID
       },
-      conversationList
+      userConversationList
     } = this;
+    const activeUC = userConversationList.get(activeID);
 
     return (
       <div
@@ -88,22 +81,23 @@ export default class App extends React.Component {
           </div>
           <div style={Styles.conversationContainer}>
             {
-              conversationList
-                .map((c) => {
+              userConversationList
+                .map((uc) => {
                   return <ConversationPreview
-                    key={'ConversationPreview-' + c.id + c.updatedAt}
+                    key={'ConversationPreview-' + uc.id + uc.updatedAt}
                     selected={
-                      c.id === (currentConversation && currentConversation.id)}
-                    conversation={c}
-                    onClick={() => this.setState({currentConversation: c})}/>
+                      uc.id === activeID}
+                    userConversation={uc}
+                    conversation={uc.$transient.conversation}
+                    onClick={() => this.setState({activeID: uc._id})}/>
                 })
             }
           </div>
         </div>
-        {currentConversation &&
+        {activeID &&
           <Conversation
-            key={'Conversation-' + currentConversation.id}
-            conversation={currentConversation}
+            key={'Conversation-' + activeID}
+            conversation={activeUC.$transient.conversation}
             showDetails={() => this.setState({currentModal: 'details'})}/>
         }
         {(modal => {
@@ -111,13 +105,13 @@ export default class App extends React.Component {
           case 'createGroup':
             return (
                 <CreateGroupModal
-                  addConversationDelegate={c => conversationList.add(c)}
+                  addConversationDelegate={c => userConversationList.addConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           case 'createChat':
             return (
                 <CreateChatModal
-                  addConversationDelegate={c => conversationList.add(c)}
+                  addConversationDelegate={c => userConversationList.addConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           case 'settings':
@@ -128,11 +122,10 @@ export default class App extends React.Component {
           case 'details':
             return (
                 <DetailsModal
-                  key={'DetailsModal-'
-                      + currentConversation.id + currentConversation.updatedAt}
-                  conversation={currentConversation}
-                  updateConversationDelegate={c => conversationList.update(c)}
-                  removeConversationDelegate={id => conversationList.remove(id)}
+                  key={'DetailsModal-' + activeID.id}
+                  conversation={activeUC.$transient.conversation}
+                  updateConversationDelegate={c => userConversationList.updateConversation(c)}
+                  removeConversationDelegate={c => userConversationList.removeConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           default:

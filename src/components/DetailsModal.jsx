@@ -77,7 +77,7 @@ export default class DetailsModal extends React.Component {
     ).then(() => {
       // close modal after leaving
       onClose();
-      removeConversationDelegate(conversation._id);
+      removeConversationDelegate(conversation);
     });
   }
   discoverAndAddUser(username) {

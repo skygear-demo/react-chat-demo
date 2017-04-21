@@ -8,7 +8,7 @@ export default class ConversationPreview extends React.Component {
     super(props);
     const {title} = props.conversation;
     this.state = {
-      title: title || 'loading...',  // conversation title (either group name or participant names)
+      title: title || 'loading...',    // conversation title (either group name or participant names)
       imageURL: 'img/loading.svg'      // conversation image URL
     };
   }
@@ -43,23 +43,17 @@ export default class ConversationPreview extends React.Component {
   }
   render() {
     const {
-      props: {
-        selected,
-        onClick,
-        conversation: {
-          unread_count,
-          $transient: {
-            last_message: {
-              body: lastMessage
-            } = {}
-          }
-        }
-      },
-      state: {
-        title,
-        imageURL
-      }
-    } = this;
+      selected,
+      onClick,
+    } = this.props;
+    const {
+      unread_count
+    } = this.props.userConversation;
+    const {
+      title,
+      imageURL
+    } = this.state;
+    const lastMessage = this.props.conversation.$transient.last_message;
 
     return (
       <div
@@ -78,8 +72,8 @@ export default class ConversationPreview extends React.Component {
           {lastMessage &&
             <span
               style={Styles.lastMessage}>
-              { lastMessage.length > 23 ?
-                  lastMessage.substring(0, 20) + '...' : lastMessage }
+              { lastMessage.body.length > 23 ?
+                  lastMessage.body.substring(0, 20) + '...' : lastMessage.body }
             </span>
           }
         </div>

@@ -50,10 +50,10 @@ export class ConversationSorting {
 }
 
 /**
- * A managed list of conversations for the current user.
- * Note: You must be logged in to use this.
+ * A managed list of user conversations for the current user.
+ * Note: You must be logged in at skygear to use this.
  */
-export default class ManagedConversationList {
+export default class ManagedUserConversationList {
   /**
    * @param {object} [options={}]
    * @param {boolean} [options.initialFetch=true]
@@ -73,8 +73,10 @@ export default class ManagedConversationList {
     this._compare = sortBy;
     // conversation IDs in order (without type prefix)
     this._orderedIDs = [];
-    // map of conversaton ID => conversation object
-    this._conversations = {};
+    // map of user conversaton ID => user conversation object
+    this._userConversations = {};
+    // map of conversaton ID => user conversation object
+    this._ucByCId = {};
     // map of subscription ID => event handler
     this._updateHandlers = {};
 
@@ -100,13 +102,13 @@ export default class ManagedConversationList {
       console.log('[conversation event]', event);
       switch (event.event_type) {
       case 'create':
-        this.add(event.record);
+        this.addConversation(event.record);
         break;
       case 'update':
-        this.update(event.record);
+        this.updateConversation(event.record);
         break;
       case 'delete':
-        this.remove(event.record._id);
+        this.removeConversation(event.record);
         break;
       }
     }
@@ -114,10 +116,10 @@ export default class ManagedConversationList {
   /**
    * @private
    */
-  _conversationsUpdated() {
-    const {_conversations, _compare, _updateHandlers} = this;
-    this._orderedIDs = Object.keys(_conversations)
-      .map(id => _conversations[id])
+  _userConversationsUpdated() {
+    const {_userConversations, _compare, _updateHandlers} = this;
+    this._orderedIDs = Object.keys(_userConversations)
+      .map(id => _userConversations[id])
       .sort(_compare)
       .map(conversation => conversation._id);
     Object.keys(_updateHandlers)
@@ -125,19 +127,20 @@ export default class ManagedConversationList {
       .forEach(handler => handler(this));
   }
   /**
-   * Fetches list of conversations from the server.
-   * @return {Promise<ManagedConversationList>}
+   * Fetches list of user conversations from the server.
+   * @return {Promise<ManagedUserConversationList>}
    * Promise of this object, resolves if the fetch is successful.
    */
   fetch() {
     return skygearChat
-      .getConversations()
+      .getUserConversations()
       .then(results => {
-        console.log('[fetched conversations]', results);
-        results.forEach(conversation => {
-          this._conversations[conversation._id] = conversation;
+        console.log('[fetched user conversations]', results);
+        results.forEach((uc) => {
+          this._userConversations[uc._id] = uc;
+          this._ucByCId[uc.$transient.conversation._id] = uc;
         });
-        this._conversationsUpdated();
+        this._userConversationsUpdated();
         return this;
       });
   }
@@ -149,17 +152,17 @@ export default class ManagedConversationList {
     return this._orderedIDs.length;
   }
   /**
-   * Get a Conversation
+   * Get a User Conversation
    * @param {number|string} indexOrID
    * Either the list index (number) or conversation ID (string) without type prefix.
    * @return {Conversation}
    */
   get(indexOrID) {
-    const {_conversations, _orderedIDs} = this;
+    const {_userConversations, _orderedIDs} = this;
     if (typeof indexOrID === 'number') {
-      return _conversations[_orderedIDs[indexOrID]];
+      return _userConversations[_orderedIDs[indexOrID]];
     } else {
-      return _conversations[indexOrID];
+      return _userConversations[indexOrID];
     }
   }
   /**
@@ -169,7 +172,7 @@ export default class ManagedConversationList {
    */
   map(mappingFunction) {
     return this._orderedIDs
-      .map(id => this._conversations[id])
+      .map(id => this._userConversations[id])
       .map(mappingFunction);
   }
   /**
@@ -179,51 +182,68 @@ export default class ManagedConversationList {
    */
   filter(predicate) {
     return this._orderedIDs
-      .map(id => this._conversations[id])
+      .map(id => this._userConversations[id])
       .filter(predicate);
   }
   /**
    * Add a conversation, no-op if the conversation already exists.
    * @param {Conversation} conversation
-   * @return {ManagedConversationList}
+   * @return {ManagedUserConversationList}
    */
-  add(conversation) {
-    const {_conversations} = this;
-    if (!_conversations.hasOwnProperty(conversation._id)) {
-      _conversations[conversation._id] = conversation;
-      this._conversationsUpdated();
+  addConversation(conversation) {
+    const {
+      _userConversations,
+      _ucByCId
+    } = this;
+    if (_ucByCId.hasOwnProperty(conversation._id)) {
+      return this;
     }
+    skygearChat
+      .getUserConversation(conversation)
+      .then((uc) => {
+        _userConversations[uc._id] = uc;
+        _ucByCId[conversation._id] = uc;
+        this._userConversationsUpdated();
+      });
     return this;
   }
   /**
    * Update a conversation, no-op if the conversation updatedAt date is older than existing.
    * Conversation will be added if it's not in the list.
    * @param {Conversation} conversation
-   * @return {ManagedConversationList}
+   * @return {ManagedUserConversationList}
    */
-  update(conversation) {
-    const {_conversations} = this;
-    if (
-      _conversations.hasOwnProperty(conversation._id) &&
-      conversation.updatedAt >= _conversations[conversation._id].updatedAt
-    ) {
-      _conversations[conversation._id] = conversation;
-      this._conversationsUpdated();
+  updateConversation(conversation) {
+    const {_ucByCId} = this;
+    if (_ucByCId.hasOwnProperty(conversation._id)) {
+      const uc = _ucByCId[conversation._id];
+      const c = uc.$transient.conversation;
+      if (conversation.updatedAt <= c.updatedAt) {
+        return this
+      }
+      uc.$transient.conversation = conversation;
+      this._userConversationsUpdated();
     } else {
-      this.add(conversation);
+      this.addConversation(conversation);
     }
     return this;
   }
   /**
    * Remove a conversation, no-op if the conversation doesn't exist.
-   * @param {string} conversationID Conversation ID without type prefix.
-   * @return {ManagedConversationList}
+   * @param {conversation} conversation Conversation without type prefix.
+   * @return {ManagedUserConversationList}
    */
-  remove(conversationID) {
-    const {_conversations} = this;
-    if (_conversations.hasOwnProperty(conversationID)) {
-      delete _conversations[conversationID];
-      this._conversationsUpdated();
+  removeConversation(conversation) {
+    const {
+      _userConversations,
+      _ucByCId
+    } = this;
+    const conversationID = conversation._id;
+    if (_ucById.hasOwnProperty(conversationID)) {
+      const uc = _ucByCId[conversationID]
+      delete _userConversations[uc._id];
+      delete _ucById[conversationID];
+      this._userConversationsUpdated();
     }
     return this;
   }
