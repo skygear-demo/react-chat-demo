@@ -50,6 +50,15 @@ export default class App extends React.Component {
     });
   }
 
+  selectConversation(userConversation) {
+    this.setState({
+      activeID: userConversation._id,
+      unreadCount: this.state.unreadCount - userConversation.unread_count
+    });
+    userConversation.unread_count = 0;
+    this.updateUnreadCount();
+  }
+
   render() {
     const {
       state: {
@@ -94,7 +103,7 @@ export default class App extends React.Component {
                       uc.id === activeID}
                     userConversation={uc}
                     conversation={uc.$transient.conversation}
-                    onClick={() => this.setState({activeID: uc._id})}/>
+                    onClick={() => this.selectConversation(uc)}/>
                 })
             }
           </div>
