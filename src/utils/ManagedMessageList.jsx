@@ -94,8 +94,9 @@ export default class ManagedMessageList {
         results.forEach(message => {
           this._messages[message._id] = message;
         });
-        if (this._autoRead) {
-          skygearChat.markAsRead(results);
+        if (this._autoRead && results) {
+          skygearChat.markAsLastMessageRead(
+            this._conversation, results[0]);
         }
         this._messagesUpdated();
         return this;
@@ -154,7 +155,7 @@ export default class ManagedMessageList {
       _messages[message._id] = message;
       this._messagesUpdated();
       if (this._autoRead) {
-        skygearChat.markAsRead([message]);
+        skygearChat.markAsLastMessageRead(this._conversation, message);
       }
     }
     return this;
