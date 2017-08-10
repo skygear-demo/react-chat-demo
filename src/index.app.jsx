@@ -10,7 +10,7 @@ import App from './components/App.jsx';
 skygear.config(config.skygearConfig)
 .then(function () {
   // redirect to login page if not logged-in
-  if (!skygear.currentUser) {
+  if (!skygear.auth.currentUser) {
     window.location.href = 'login.html';
   } else {
     const root = document.createElement('div');

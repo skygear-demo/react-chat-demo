@@ -1,7 +1,7 @@
 import React from 'react';
 import skygearChat from 'skygear-chat';
 
-import ManagedUserConversationList from '../utils/ManagedConversationList.jsx';
+import ManagedConversationList from '../utils/ManagedConversationList.jsx';
 
 import Conversation from './Conversation.jsx';
 import ConversationPreview from './ConversationPreview.jsx';
@@ -9,6 +9,7 @@ import CreateChatModal from './CreateChatModal.jsx';
 import CreateGroupModal from './CreateGroupModal.jsx';
 import SettingsModal from './SettingsModal.jsx';
 import DetailsModal from './DetailsModal.jsx';
+import Styles from '../styles/App.jsx';
 
 
 function AddButton({
@@ -32,12 +33,12 @@ export default class App extends React.Component {
       currentModal: null, // currently displayed modal dialog name (or null)
       activeID: null // currently selected UserConversion ID (or null)
     };
-    this.userConversationList = new ManagedUserConversationList();
+    this.ConversationList = new ManagedConversationList();
   }
 
   componentDidMount() {
     // subscribe conversation change
-    this.userConversationList.subscribe(() => {
+    this.ConversationList.subscribe(() => {
       this.forceUpdate();
       this.updateUnreadCount();
     });
@@ -50,12 +51,12 @@ export default class App extends React.Component {
     });
   }
 
-  selectConversation(userConversation) {
+  selectConversation(conversation) {
     this.setState({
-      activeID: userConversation._id,
-      unreadCount: this.state.unreadCount - userConversation.unread_count
+      activeID: conversation._id,
+      unreadCount: this.state.unreadCount - conversation.unread_count
     });
-    userConversation.unread_count = 0;
+    conversation.unread_count = 0;
     this.updateUnreadCount();
   }
 
@@ -66,9 +67,9 @@ export default class App extends React.Component {
         currentModal,
         activeID
       },
-      userConversationList
+      ConversationList
     } = this;
-    const activeUC = userConversationList.get(activeID);
+    const activeConversation = ConversationList.get(activeID);
 
     return (
       <div
@@ -95,15 +96,14 @@ export default class App extends React.Component {
           </div>
           <div style={Styles.conversationContainer}>
             {
-              userConversationList
-                .map((uc) => {
+              ConversationList
+                .map((c) => {
                   return <ConversationPreview
-                    key={'ConversationPreview-' + uc.id + uc.updatedAt}
+                    key={'ConversationPreview-' + c.id + c.updatedAt}
                     selected={
-                      uc.id === activeID}
-                    userConversation={uc}
-                    conversation={uc.$transient.conversation}
-                    onClick={() => this.selectConversation(uc)}/>
+                      c.id === activeID}
+                    conversation={c}
+                    onClick={() => this.selectConversation(c)}/>;
                 })
             }
           </div>
@@ -111,7 +111,7 @@ export default class App extends React.Component {
         {activeID &&
           <Conversation
             key={'Conversation-' + activeID}
-            conversation={activeUC.$transient.conversation}
+            conversation={activeConversation}
             showDetails={() => this.setState({currentModal: 'details'})}/>
         }
         {(modal => {
@@ -119,13 +119,15 @@ export default class App extends React.Component {
           case 'createGroup':
             return (
                 <CreateGroupModal
-                  addConversationDelegate={c => userConversationList.addConversation(c)}
+                  addConversationDelegate={c =>
+                                           ConversationList.addConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           case 'createChat':
             return (
                 <CreateChatModal
-                  addConversationDelegate={c => userConversationList.addConversation(c)}
+                  addConversationDelegate={c =>
+                                           ConversationList.addConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           case 'settings':
@@ -137,9 +139,13 @@ export default class App extends React.Component {
             return (
                 <DetailsModal
                   key={'DetailsModal-' + activeID.id}
-                  conversation={activeUC.$transient.conversation}
-                  updateConversationDelegate={c => userConversationList.updateConversation(c)}
-                  removeConversationDelegate={c => userConversationList.removeConversation(c)}
+                  conversation={activeConversation}
+                  updateConversationDelegate={c =>
+                                              ConversationList
+                                              .updateConversation(c)}
+                  removeConversationDelegate={c =>
+                                              ConversationList
+                                              .removeConversation(c)}
                   onClose={() => this.setState({currentModal: null})}/>
             );
           default:
@@ -149,61 +155,4 @@ export default class App extends React.Component {
       </div>
     );
   }
-}
-
-
-const Styles = {
-  root: {
-    position: 'fixed',
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    overflowX: 'scroll'
-  },
-
-  leftPanel: {
-    height: '100%',
-    width: '25%',
-    minWidth: '400px',
-    borderRight: '1px solid #888',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-
-  settingPanel: {
-    height: '2rem',
-    minHeight: '2rem',
-    padding: '1rem 2rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottom: '1px solid #888'
-  },
-
-  settingImg: {
-    cursor: 'pointer',
-    height: '2rem'
-  },
-
-  creationPanel: {
-    display: 'flex',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: '1rem 0',
-    borderBottom: '1px solid #888',
-    height: '4rem',
-    minHeight: '4rem'
-  },
-
-  conversationContainer: {
-    overflowY: 'scroll'
-  },
-
-  addButton: {
-    backgroundColor: '#FFF',
-    border: '1px solid #000',
-    padding: '1rem 2rem',
-    cursor: 'pointer'
-  },
-
 }

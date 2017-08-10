@@ -2,6 +2,7 @@ import React from 'react';
 import skygear from 'skygear';
 
 import UserLoader from '../utils/UserLoader.jsx';
+import Styles from '../styles/ConversationPreview.jsx';
 
 export default class ConversationPreview extends React.Component {
   constructor(props) {
@@ -23,7 +24,7 @@ export default class ConversationPreview extends React.Component {
       .map(userID => UserLoader.get(userID))
     ).then(users => {
       if (users.length > 1) {
-        users = users.filter(u => u._id !== skygear.currentUser.id)
+        users = users.filter(u => u._id !== skygear.auth.currentUser.id);
       }
       let names = users
         .map(u => u.displayName)
@@ -33,7 +34,7 @@ export default class ConversationPreview extends React.Component {
       }
       let avatar = 'img/avatar.svg';
       if (users[0]) {
-         avatar = users[0].avatar ? users[0].avatar.url : 'img/avatar.svg';
+        avatar = users[0].avatar ? users[0].avatar.url : 'img/avatar.svg';
       }
       this.setState({
         title: title || names,
@@ -44,11 +45,11 @@ export default class ConversationPreview extends React.Component {
   render() {
     const {
       selected,
-      onClick,
+      onClick
     } = this.props;
     const {
       unread_count
-    } = this.props.userConversation;
+    } = this.props.conversation;
     const {
       title,
       imageURL
@@ -59,11 +60,11 @@ export default class ConversationPreview extends React.Component {
       <div
         onClick={onClick}
         style={Object.assign({}, Styles.container, {
-          backgroundColor: selected ? '#EEE' : '#FFF',
+          backgroundColor: selected ? '#EEE' : '#FFF'
         })}>
         <div
           style={Object.assign({}, Styles.conversationImg, {
-            backgroundImage: `url(${imageURL})`,
+            backgroundImage: `url(${imageURL})`
           })}>
         </div>
         <div
@@ -82,41 +83,5 @@ export default class ConversationPreview extends React.Component {
         </span>
       </div>
     );
-  }
-}
-
-const Styles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    padding: '1rem 2rem',
-    borderBottom: '1px solid #DDD',
-    cursor: 'pointer'
-  },
-
-  conversationImg: {
-    border: '1px solid #000',
-    borderRadius: '100%',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    width: '3rem',
-    height: '3rem'
-  },
-
-  conversationTitle: {
-    padding: '0 1rem',
-    display: 'flex',
-    flexDirection: 'column',
-    width: '70%'
-  },
-
-  title: {
-    margin: '0'
-  },
-
-  lastMessage: {
-    marginTop: '0.5rem',
-    color: '#AAA'
   }
 }

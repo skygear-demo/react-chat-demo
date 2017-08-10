@@ -48,7 +48,7 @@ export default class ManagedMessageList {
   _eventHandler(event) {
     if (
       event.record_type === 'message' &&
-      event.record.conversation_id.id === this._conversation.id
+      event.record.conversation.id === this._conversation.id
     ) {
       console.log('[message event]', event);
       switch (event.event_type) {
@@ -94,9 +94,8 @@ export default class ManagedMessageList {
         results.forEach(message => {
           this._messages[message._id] = message;
         });
-        if (this._autoRead && results) {
-          skygearChat.markAsLastMessageRead(
-            this._conversation, results[0]);
+        if (this._autoRead && results && results.length > 0) {
+          skygearChat.markAsRead([results[0]]);
         }
         this._messagesUpdated();
         return this;
@@ -155,7 +154,7 @@ export default class ManagedMessageList {
       _messages[message._id] = message;
       this._messagesUpdated();
       if (this._autoRead) {
-        skygearChat.markAsLastMessageRead(this._conversation, message);
+        skygearChat.markAsRead([message]);
       }
     }
     return this;
