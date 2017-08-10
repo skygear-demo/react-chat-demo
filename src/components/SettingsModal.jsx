@@ -2,6 +2,7 @@ import React from 'react';
 import skygear from 'skygear';
 
 import Modal from './Modal.jsx';
+import Styles from '../styles/SettingsModal.jsx';
 
 export default class SettingsModal extends React.Component {
   constructor(props) {
@@ -18,7 +19,7 @@ export default class SettingsModal extends React.Component {
     // fetch user profile
     skygear.publicDB.query(
       new skygear.Query(skygear.UserRecord)
-      .equalTo('_id', skygear.currentUser.id)
+      .equalTo('_id', skygear.auth.currentUser.id)
     ).then(([user]) => {
       this.setState({
         loading: false,
@@ -31,7 +32,7 @@ export default class SettingsModal extends React.Component {
     this.setState({loading: true});
     skygear.publicDB.save(
       new skygear.UserRecord({
-        _id: 'user/' + skygear.currentUser.id,
+        _id: 'user/' + skygear.auth.currentUser.id,
         avatar: new skygear.Asset({
           name: imageFile.name,
           file: imageFile
@@ -49,7 +50,7 @@ export default class SettingsModal extends React.Component {
     this.setState({loading: true});
     skygear.publicDB.save(
       new skygear.UserRecord({
-        _id: 'user/' + skygear.currentUser.id,
+        _id: 'user/' + skygear.auth.currentUser.id,
         displayName: newDisplayName
       })
     ).then(() => {
@@ -69,7 +70,7 @@ export default class SettingsModal extends React.Component {
   }
   logout() {
     this.setState({loading: true});
-    skygear.logout().then(() => {
+    skygear.auth.logout().then(() => {
       this.setState({loading: false});
       window.location.href = 'login.html';
     });
@@ -88,7 +89,8 @@ export default class SettingsModal extends React.Component {
       }
     } = this;
 
-    const currentUsername = skygear.currentUser && skygear.currentUser.username;
+    const currentUsername = skygear.auth.currentUser &&
+                            skygear.auth.currentUser.username;
 
     return (
       <Modal
@@ -108,7 +110,7 @@ export default class SettingsModal extends React.Component {
             <div
               style={Object.assign({}, Styles.avatarImg, {
                 backgroundImage: `url(${loading ?
-                  'img/loading.svg' : avatarURL})`,
+                  'img/loading.svg' : avatarURL})`
               })}>
             </div>
             <span
@@ -166,70 +168,5 @@ export default class SettingsModal extends React.Component {
         </div>
       </Modal>
     );
-  }
-}
-
-const Styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    margin: '2rem 0',
-    width: '18rem'
-  },
-
-  avatarLabel: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-
-  avatarImg: {
-    border: '1px solid #000',
-    borderRadius: '100%',
-    backgroundSize: 'contain',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    cursor: 'pointer',
-    width: '5rem',
-    height: '5rem'
-  },
-
-  avatarEdit: {
-    cursor: 'pointer',
-    textDecoration: 'underline'
-  },
-
-  centerAlign: {
-    display: 'flex',
-    alignItems: 'center',
-    marginTop: '1rem'
-  },
-
-  editStart: {
-    marginLeft: '1rem',
-    height: '1rem',
-    cursor: 'pointer'
-  },
-
-  editCancel: {
-    cursor: 'pointer',
-    fontSize: '1.3rem'
-  },
-
-  editConfirm: {
-    cursor: 'pointer',
-    fontSize: '1.5rem'
-  },
-
-  logoutContainer: {
-    width: '100%',
-    textAlign: 'center'
-  },
-
-  logoutButton: {
-    background: '#FFF',
-    border: '1px solid #000',
-    padding: '1rem 2rem'
   }
 }

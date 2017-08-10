@@ -2,6 +2,7 @@ import React from 'react';
 import skygear from 'skygear';
 
 import Modal from './Modal.jsx';
+import Styles from '../styles/Authenticate.jsx';
 
 function InputField({
   label,    // input label text
@@ -56,7 +57,7 @@ export class Login extends React.Component {
     password
   ) {
     this.setState({loading: true});
-    skygear.loginWithUsername(
+    skygear.auth.loginWithUsername(
       username,
       password
     ).then(() => {
@@ -143,7 +144,7 @@ export class Signup extends React.Component {
       return;
     }
     this.setState({loading: true});
-    skygear.signupWithUsername(
+    skygear.auth.signupWithUsername(
       username,
       password
     ).then(user => {
@@ -220,49 +221,5 @@ export class Signup extends React.Component {
         }
       </div>
     );
-  }
-}
-
-
-const Styles = {
-  container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'fixed',
-    height: '100%',
-    width: '100%'
-  },
-
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '300px'
-  },
-
-  formElement: {
-    margin: '0.5rem 0',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-
-  formInput: {
-    border: '1px solid #000',
-    padding: '0.5rem',
-    fontSize: '1rem'
-  },
-
-  formButton: {
-    margin: '1rem 0',
-    backgroundColor: '#FFF',
-    border: '1px solid #000',
-    padding: '1rem 2rem'
-  },
-
-  modelContainer: {
-    width: '16rem',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
   }
 }

@@ -15,6 +15,13 @@ const UserLoader = {
       this._userPromiseCache[userID] = userPromise;
       return userPromise;
     }
+  },
+
+  getUsersByUsernames: function (usernames) {
+    return skygear.publicDB.query(
+      new skygear.Query(skygear.UserRecord)
+      .contains('username', usernames)
+    );
   }
 };
 

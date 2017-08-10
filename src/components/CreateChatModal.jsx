@@ -1,8 +1,8 @@
 import React from 'react';
-import skygear from 'skygear';
 import skygearChat from 'skygear-chat';
-
+import UserLoader from '../utils/UserLoader.jsx';
 import Modal from './Modal.jsx';
+import Styles from '../styles/CreateChatModal.jsx';
 
 export default class CreateChatModal extends React.Component {
   constructor(props) {
@@ -14,8 +14,8 @@ export default class CreateChatModal extends React.Component {
   }
   discoverUserAndCreateChat(username) {
     this.setState({loading: true});
-    skygear.discoverUserByUsernames(
-      username
+    UserLoader.getUsersByUsernames(
+      [username]
     ).then(users => {
       if (users.length <= 0) {
         return Promise.reject({message: `user "${username}" not found`});
@@ -69,24 +69,5 @@ export default class CreateChatModal extends React.Component {
         </form>
       </Modal>
     );
-  }
-}
-
-const Styles = {
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    width: '21rem',
-    padding: '3rem 3rem 1rem'
-  },
-
-  buttonContainer: {
-    alignSelf: 'flex-end'
-  },
-
-  startButton: {
-    backgroundColor: '#FFF',
-    border: '1px solid #000',
-    padding: '0.5rem 1rem'
   }
 }

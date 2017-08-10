@@ -7,6 +7,7 @@ import ManagedMessageList from '../utils/ManagedMessageList.jsx';
 import UserLoader from '../utils/UserLoader.jsx';
 
 import Message from './Message.jsx';
+import Styles from '../styles/Conversation.jsx';
 
 export default class Conversation extends React.Component {
   constructor(props) {
@@ -64,7 +65,7 @@ export default class Conversation extends React.Component {
       .map(userID => UserLoader.get(userID))
     ).then(results => {
       let names = results
-        .filter(u => u._id !== skygear.currentUser.id)
+        .filter(u => u._id !== skygear.auth.currentUser.id)
         .map(u => u.displayName)
         .join(', ');
       if (names.length > 30) {
@@ -103,14 +104,14 @@ export default class Conversation extends React.Component {
       const message = new skygear.Record('message', {
         body: messageBody,
         metadata: {},
-        conversation_id: new skygear.Reference(conversation.id),
+        conversation: new skygear.Reference(conversation.id),
         createdAt: new Date(),
-        createdBy: skygear.currentUser.id
+        createdBy: skygear.auth.currentUser.id
       });
       this.messageList.add(message);
-      skygear.privateDB.save(message).then(() => {
+      skygear.publicDB.save(message).then(() => {
         // force update the conversation on new message to trigger pubsub event
-        skygearChat.updateConversation(conversation);
+        skygearChat.markAsRead([message]);
       });
     }
   }
@@ -119,7 +120,7 @@ export default class Conversation extends React.Component {
       props: {
         showDetails,
         conversation: {
-          participant_count
+          participant_ids
         }
       },
       state: {
@@ -129,7 +130,8 @@ export default class Conversation extends React.Component {
       },
       messageList
     } = this;
-    const currentUserID = skygear.currentUser && skygear.currentUser.id;
+    const currentUserID = skygear.auth.currentUser &&
+                          skygear.auth.currentUser.id;
 
     return (
       <div
@@ -141,7 +143,8 @@ export default class Conversation extends React.Component {
             <span></span>
             <div
               style={Styles.title}>
-              <strong>{title}</strong> {` (${participant_count} people)`} <br/>
+              <strong>{title}</strong>
+              {` (${participant_ids.length} people)`} <br/>
               <span style={{fontSize: '1rem'}}>
                 {
                   (() => {
@@ -196,79 +199,4 @@ export default class Conversation extends React.Component {
       </div>
     );
   }
-}
-
-
-const Styles = {
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    width: '75%',
-    height: '100%'
-  },
-
-  topPanel: {
-    position: 'relative',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    height: '6rem',
-    borderBottom: '1px solid #000'
-  },
-
-  title: {
-    textAlign: 'center',
-    fontSize: '1.5rem'
-  },
-
-  panelContent: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%'
-  },
-
-  infoImg: {
-    height: '2rem',
-    cursor: 'pointer',
-    marginRight: '2rem'
-  },
-
-  messageList: {
-    height: '100%',
-    width: '100%',
-    overflowX: 'hidden',
-    overflowY: 'scroll'
-  },
-
-  messageBox: {
-    width: '100%',
-    height: '5rem',
-    display: 'flex',
-    alignItems: 'center',
-    borderTop: '1px solid #000'
-  },
-
-  messageForm: {
-    width: '100%',
-    margin: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between'
-  },
-
-  messageInput: {
-    padding: '0.25rem',
-    fontSize: '1rem',
-    width: '100%'
-  },
-
-  messageSubmit: {
-    backgroundColor: '#FFF',
-    border: '1px solid #000',
-    padding: '0.5rem 1rem',
-    marginLeft: '1rem'
-  }
-
 }

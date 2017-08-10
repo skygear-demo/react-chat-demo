@@ -1,6 +1,7 @@
 var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   entry: {
@@ -9,7 +10,7 @@ module.exports = {
     app:    './src/index.app.jsx',
   },
   output: {
-    path:     './demo',
+    path:     path.resolve(__dirname, 'demo'),
     filename: '[name].js'
   },
   module: {
