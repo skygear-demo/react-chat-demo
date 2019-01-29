@@ -30,7 +30,7 @@
     "normalize.css": "^5.0.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
-    "skygear": "^1.1.0",
-    "skygear-chat": "file:./chat-SDK-JS"
+    "skygear": "^1.7.0",
+    "skygear-chat": "^1.6.3"
   }
 }

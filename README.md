@@ -34,9 +34,6 @@ To try out this demo:
 1. Clone this repository
 2. In the project directory, retrieve the submodules and npm dependencies by following
 ```
-git submodule init
-git submodule update
-cd chat-SDK-JS && npm install && cd ..
 npm install
 ```
 3. Run `npm run config` to configure your skygear endpoint & API key.
