@@ -23,29 +23,38 @@ export default class Message extends React.Component {
       props: {message},
       state: {user}
     } = this;
-    const currentUserID = skygear.currentUser && skygear.currentUser.id;
+    const currentUserID = skygear.auth.currentUser && skygear.auth.currentUser.id;
 
     if (!user) {
       return null;
     }
+
+    const isMine = `user/${message.ownerID}` === currentUserID
+
     return (
       <div
         style={Object.assign({},
           Styles.container,
-          {justifyContent: user._id ===
-           currentUserID ? 'flex-end' : 'flex-start'}
+          {justifyContent: isMine ? 'flex-end' : 'flex-start'}
           )}>
-        <div
+        {!isMine && <div
           style={Object.assign({},
             Styles.avatar,
             {backgroundImage: `url(${user.avatar ?
               user.avatar.url : 'img/avatar.svg'})`}
           )}>
-        </div>
+        </div>}
         <div
           style={Styles.messageBody}>
           {message.body}
         </div>
+        {isMine && <div
+          style={Object.assign({},
+            Styles.avatar,
+            {backgroundImage: `url(${user.avatar ?
+              user.avatar.url : 'img/avatar.svg'})`}
+          )}>
+        </div>}
       </div>
     );
   }
